@@ -37,7 +37,8 @@ export interface Subscription {
 
 export interface SubscriptionFormData {
   name: string;
-  category_id: number;
+  category_id?: number | null;
+  category_name: string;
   amount: number;
   currency: string;
   billing_cycle: 'weekly' | 'monthly' | 'quarterly' | 'yearly';
