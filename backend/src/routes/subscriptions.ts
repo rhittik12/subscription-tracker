@@ -6,7 +6,8 @@ const router = Router();
 
 const subscriptionSchema = z.object({
   name: z.string().min(1).max(100),
-  category_id: z.number().int().positive(),
+  category_id: z.number().int().positive().optional().nullable(),
+  category_name: z.string().min(1).max(50),
   amount: z.number().positive(),
   currency: z.string().length(3),
   billing_cycle: z.enum(['weekly', 'monthly', 'quarterly', 'yearly']),
@@ -17,6 +18,31 @@ const subscriptionSchema = z.object({
   logo_url: z.string().optional().nullable(),
   template_id: z.number().int().positive().optional().nullable(),
 });
+
+async function resolveCategoryId(categoryId: number | null | undefined, categoryName: string): Promise<number> {
+  if (categoryId) {
+    return categoryId;
+  }
+
+  const trimmedName = categoryName.trim();
+  const existing = await pool.query(
+    'SELECT id FROM categories WHERE LOWER(name) = LOWER($1) LIMIT 1',
+    [trimmedName]
+  );
+
+  if (existing.rows.length > 0) {
+    return existing.rows[0].id;
+  }
+
+  const inserted = await pool.query(
+    `INSERT INTO categories (name)
+     VALUES ($1)
+     RETURNING id`,
+    [trimmedName]
+  );
+
+  return inserted.rows[0].id;
+}
 
 // GET /api/subscriptions
 router.get('/', async (req: Request, res: Response) => {
@@ -82,12 +108,13 @@ router.get('/:id', async (req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const data = subscriptionSchema.parse(req.body);
+    const resolvedCategoryId = await resolveCategoryId(data.category_id, data.category_name);
     const result = await pool.query(
       `INSERT INTO subscriptions (name, category_id, amount, currency, billing_cycle, next_renewal_date, start_date, status, notes, logo_url, template_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING *`,
       [
-        data.name, data.category_id, data.amount, data.currency,
+        data.name, resolvedCategoryId, data.amount, data.currency,
         data.billing_cycle, data.next_renewal_date, data.start_date || null,
         data.status || 'active', data.notes || null, data.logo_url || null,
         data.template_id || null,
@@ -107,6 +134,7 @@ router.post('/', async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const data = subscriptionSchema.parse(req.body);
+    const resolvedCategoryId = await resolveCategoryId(data.category_id, data.category_name);
     const result = await pool.query(
       `UPDATE subscriptions
        SET name = $1, category_id = $2, amount = $3, currency = $4,
@@ -116,7 +144,7 @@ router.put('/:id', async (req: Request, res: Response) => {
        WHERE id = $12
        RETURNING *`,
       [
-        data.name, data.category_id, data.amount, data.currency,
+        data.name, resolvedCategoryId, data.amount, data.currency,
         data.billing_cycle, data.next_renewal_date, data.start_date || null,
         data.status || 'active', data.notes || null, data.logo_url || null,
         data.template_id || null, req.params.id,

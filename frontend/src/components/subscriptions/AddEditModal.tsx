@@ -11,7 +11,8 @@ import { ServiceTemplate } from '@/lib/serviceTemplates';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
-  category_id: z.number({ required_error: 'Category is required' }).int().positive(),
+  category_id: z.number().int().positive().optional().nullable(),
+  category_name: z.string().min(1, 'Category is required').max(50),
   amount: z.number({ required_error: 'Amount is required' }).positive('Amount must be positive'),
   currency: z.string().length(3),
   billing_cycle: z.enum(['weekly', 'monthly', 'quarterly', 'yearly']),
@@ -44,6 +45,7 @@ export function AddEditModal({
   const [templates, setTemplates] = useState<SubscriptionTemplate[]>([]);
   const [templateSearch, setTemplateSearch] = useState('');
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
 
   const isEditing = !!subscription;
 
@@ -58,7 +60,8 @@ export function AddEditModal({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      category_id: categories[0]?.id || 1,
+      category_id: categories[0]?.id || null,
+      category_name: categories[0]?.name || '',
       amount: 0,
       currency: 'INR',
       billing_cycle: 'monthly',
@@ -87,6 +90,7 @@ export function AddEditModal({
       reset({
         name: subscription.name,
         category_id: subscription.category_id,
+        category_name: subscription.category_name,
         amount: parseFloat(subscription.amount),
         currency: subscription.currency,
         billing_cycle: subscription.billing_cycle,
@@ -104,6 +108,7 @@ export function AddEditModal({
       reset({
         name: initialTemplate.name,
         category_id: matchedCategoryId || categories[0]?.id || 1,
+        category_name: initialTemplate.category,
         amount: 0,
         currency: 'INR',
         billing_cycle: 'monthly',
@@ -116,7 +121,8 @@ export function AddEditModal({
     } else {
       reset({
         name: '',
-        category_id: categories[0]?.id || 1,
+        category_id: categories[0]?.id || null,
+        category_name: categories[0]?.name || '',
         amount: 0,
         currency: 'INR',
         billing_cycle: 'monthly',
@@ -132,6 +138,7 @@ export function AddEditModal({
   function selectTemplate(template: SubscriptionTemplate) {
     setValue('name', template.name);
     setValue('category_id', template.category_id);
+    setValue('category_name', template.category_name);
     setValue('currency', template.default_currency);
     setValue('logo_url', template.logo_url);
     setValue('template_id', template.id);
@@ -142,6 +149,30 @@ export function AddEditModal({
   const filteredTemplates = templates.filter((t) =>
     t.name.toLowerCase().includes(templateSearch.toLowerCase())
   );
+
+  const categoryInput = watch('category_name') || '';
+  const filteredCategories = categories.filter((cat) =>
+    cat.name.toLowerCase().includes(categoryInput.toLowerCase())
+  );
+
+  function selectCategory(category: Category) {
+    setValue('category_name', category.name, { shouldValidate: true });
+    setValue('category_id', category.id);
+    setShowCategorySuggestions(false);
+  }
+
+  function handleFormSubmit(data: FormData) {
+    const trimmedCategory = data.category_name.trim();
+    const matchedCategory = categories.find(
+      (category) => category.name.toLowerCase() === trimmedCategory.toLowerCase()
+    );
+
+    onSubmit({
+      ...data,
+      category_name: trimmedCategory,
+      category_id: matchedCategory?.id ?? null,
+    });
+  }
 
   if (!isOpen) return null;
 
@@ -168,7 +199,7 @@ export function AddEditModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="relative z-10 space-y-4 p-5">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="relative z-10 space-y-4 p-5">
           {/* Template search */}
           {!isEditing && (
             <div className="relative">
@@ -223,15 +254,35 @@ export function AddEditModal({
           {/* Category */}
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-white/60">Category *</label>
-            <select
-              {...register('category_id', { valueAsNumber: true })}
-              className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
-            >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id} className="bg-[#0f1223] text-white">{cat.name}</option>
-              ))}
-            </select>
-            {errors.category_id && <p className="text-xs text-rose-400 mt-1">{errors.category_id.message}</p>}
+            <div className="relative">
+              <input
+                {...register('category_name')}
+                placeholder="Type category (e.g. Entertainment)"
+                onFocus={() => setShowCategorySuggestions(true)}
+                onBlur={() => setTimeout(() => setShowCategorySuggestions(false), 120)}
+                className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
+              />
+              {showCategorySuggestions && categoryInput && (
+                <div className="absolute z-30 mt-1 max-h-44 w-full overflow-y-auto rounded-2xl glass-heavy">
+                  {filteredCategories.length === 0 ? (
+                    <div className="p-3 text-sm text-white/30">No existing categories. Press save to create &quot;{categoryInput}&quot;.</div>
+                  ) : (
+                    filteredCategories.map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => selectCategory(cat)}
+                        className="block w-full px-3 py-2.5 text-left text-sm text-white/75 transition-colors hover:bg-white/[0.06]"
+                      >
+                        {cat.name}
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+            {errors.category_name && <p className="mt-1 text-xs text-rose-400">{errors.category_name.message}</p>}
           </div>
 
           {/* Amount + Currency */}
