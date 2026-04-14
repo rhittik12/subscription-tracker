@@ -12,7 +12,7 @@ import { ServiceTemplate } from '@/lib/serviceTemplates';
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
   category_id: z.number().int().positive().optional().nullable(),
-  category_name: z.string().min(1, 'Category is required').max(50),
+  category_name: z.string().trim().min(1, 'Category is required').max(50),
   amount: z.number({ required_error: 'Amount is required' }).positive('Amount must be positive'),
   currency: z.string().length(3),
   billing_cycle: z.enum(['weekly', 'monthly', 'quarterly', 'yearly']),

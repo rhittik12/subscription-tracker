@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS notification_logs (
 );
 
 -- Indexes
+CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_name_lower_unique ON categories(LOWER(name));
 CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_next_renewal ON subscriptions(next_renewal_date);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_category ON subscriptions(category_id);

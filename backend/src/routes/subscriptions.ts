@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import pool from '../config/db';
 import { z } from 'zod';
+import { PoolClient } from 'pg';
 
 const router = Router();
 
@@ -19,13 +20,29 @@ const subscriptionSchema = z.object({
   template_id: z.number().int().positive().optional().nullable(),
 });
 
-async function resolveCategoryId(categoryId: number | null | undefined, categoryName: string): Promise<number> {
+async function resolveCategoryId(
+  client: PoolClient,
+  categoryId: number | null | undefined,
+  categoryName: string
+): Promise<number> {
   if (categoryId) {
     return categoryId;
   }
 
   const trimmedName = categoryName.trim();
-  const existing = await pool.query(
+  const inserted = await client.query(
+    `INSERT INTO categories (name)
+     VALUES ($1)
+     ON CONFLICT (LOWER(name)) DO NOTHING
+     RETURNING id`,
+    [trimmedName]
+  );
+
+  if (inserted.rows.length > 0) {
+    return inserted.rows[0].id;
+  }
+
+  const existing = await client.query(
     'SELECT id FROM categories WHERE LOWER(name) = LOWER($1) LIMIT 1',
     [trimmedName]
   );
@@ -34,14 +51,7 @@ async function resolveCategoryId(categoryId: number | null | undefined, category
     return existing.rows[0].id;
   }
 
-  const inserted = await pool.query(
-    `INSERT INTO categories (name)
-     VALUES ($1)
-     RETURNING id`,
-    [trimmedName]
-  );
-
-  return inserted.rows[0].id;
+  throw new Error('Failed to resolve category id');
 }
 
 // GET /api/subscriptions
@@ -106,10 +116,14 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 // POST /api/subscriptions
 router.post('/', async (req: Request, res: Response) => {
+  let client: PoolClient | null = null;
   try {
     const data = subscriptionSchema.parse(req.body);
-    const resolvedCategoryId = await resolveCategoryId(data.category_id, data.category_name);
-    const result = await pool.query(
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const resolvedCategoryId = await resolveCategoryId(client, data.category_id, data.category_name);
+    const result = await client.query(
       `INSERT INTO subscriptions (name, category_id, amount, currency, billing_cycle, next_renewal_date, start_date, status, notes, logo_url, template_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING *`,
@@ -120,22 +134,33 @@ router.post('/', async (req: Request, res: Response) => {
         data.template_id || null,
       ]
     );
+
+    await client.query('COMMIT');
     res.status(201).json(result.rows[0]);
   } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
     console.error('Error creating subscription:', error);
     res.status(500).json({ error: 'Failed to create subscription' });
+  } finally {
+    client?.release();
   }
 });
 
 // PUT /api/subscriptions/:id
 router.put('/:id', async (req: Request, res: Response) => {
+  let client: PoolClient | null = null;
   try {
     const data = subscriptionSchema.parse(req.body);
-    const resolvedCategoryId = await resolveCategoryId(data.category_id, data.category_name);
-    const result = await pool.query(
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const resolvedCategoryId = await resolveCategoryId(client, data.category_id, data.category_name);
+    const result = await client.query(
       `UPDATE subscriptions
        SET name = $1, category_id = $2, amount = $3, currency = $4,
            billing_cycle = $5, next_renewal_date = $6, start_date = $7,
@@ -153,13 +178,20 @@ router.put('/:id', async (req: Request, res: Response) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Subscription not found' });
     }
+
+    await client.query('COMMIT');
     res.json(result.rows[0]);
   } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK');
+    }
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
     console.error('Error updating subscription:', error);
     res.status(500).json({ error: 'Failed to update subscription' });
+  } finally {
+    client?.release();
   }
 });
 
