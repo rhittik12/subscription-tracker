@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Bell,
   CircleHelp,
@@ -9,12 +9,45 @@ import {
   Menu,
   X,
 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSearchableRoute = pathname === '/';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState(isSearchableRoute ? searchParams.get('q') ?? '' : '');
+  const currentSearch = searchParams.get('q') ?? '';
+  const searchParamsString = searchParams.toString();
+
+  useEffect(() => {
+    if (!isSearchableRoute) return;
+    setSearchValue(currentSearch);
+  }, [currentSearch, isSearchableRoute]);
+
+  useEffect(() => {
+    if (!isSearchableRoute || searchValue.trim() === currentSearch) return;
+
+    const timeoutId = window.setTimeout(() => {
+      const nextParams = new URLSearchParams(searchParamsString);
+      const trimmedSearch = searchValue.trim();
+
+      if (trimmedSearch) {
+        nextParams.set('q', trimmedSearch);
+      } else {
+        nextParams.delete('q');
+      }
+
+      const queryString = nextParams.toString();
+      router.replace(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+    }, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [currentSearch, isSearchableRoute, pathname, router, searchParamsString, searchValue]);
+
+  const searchPlaceholder = 'Search services, categories, or domains...';
 
   const links = [
     { href: '/', label: 'Dashboard' },
@@ -33,17 +66,24 @@ export function Navbar() {
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          <div className="group relative w-full max-w-xl">
+          {isSearchableRoute ? (
+            <div className="group relative w-full max-w-xl">
             <Search
               size={16}
               className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-white/30 transition-colors group-focus-within:text-white/75"
             />
             <input
               type="text"
-              placeholder="Search subscriptions, dates, or providers..."
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+                placeholder={searchPlaceholder}
               className="w-full border-0 border-b border-white/10 bg-transparent pb-2 pl-7 text-sm text-white/90 placeholder:text-white/25 focus:border-white/50 focus:outline-none focus:ring-0"
+              aria-label="Search"
             />
-          </div>
+            </div>
+          ) : (
+            <div className="w-full max-w-xl" />
+          )}
         </div>
 
         <div className="flex items-center gap-2">
