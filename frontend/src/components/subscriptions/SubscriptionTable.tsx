@@ -209,7 +209,12 @@ export function SubscriptionTable({
             </table>
           </div>
         </div>
-      ) : null }
+      ) : (
+        <div className="glass-card rounded-2xl px-6 py-10 text-center">
+          <p className="text-sm font-semibold text-white/80">No subscriptions found.</p>
+          <p className="mt-2 text-sm text-white/35">Add a subscription to get started.</p>
+        </div>
+      )}
     </div>
   );
 }

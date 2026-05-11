@@ -5,6 +5,7 @@ import { getAnalyticsSummary } from '@/lib/api';
 import { AnalyticsSummary } from '@/types';
 import { Plus, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import {
   defaultServiceTemplates,
@@ -54,6 +55,8 @@ export default function DashboardPage() {
   const [services, setServices] = useState<ServiceTemplate[]>(defaultServiceTemplates);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(5);
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('q') ?? '').trim().toLowerCase();
 
   useEffect(() => {
     async function fetchData() {
@@ -90,8 +93,19 @@ export default function DashboardPage() {
   const upcomingTotal = summary
     ? formatCurrency(summary.renewing_this_week > 0 ? summary.total_monthly * 0.32 : 0, summary.currency)
     : '--';
-  const visibleServices = useMemo(() => services.slice(0, visibleCount), [services, visibleCount]);
-  const canViewMore = visibleCount < services.length;
+  const filteredServices = useMemo(() => {
+    if (!searchQuery) {
+      return services;
+    }
+
+    return services.filter((service) => {
+      const haystacks = [service.name, service.category, service.domain].map((value) => value.toLowerCase());
+      return haystacks.some((value) => value.includes(searchQuery));
+    });
+  }, [searchQuery, services]);
+
+  const visibleServices = useMemo(() => filteredServices.slice(0, visibleCount), [filteredServices, visibleCount]);
+  const canViewMore = visibleCount < filteredServices.length;
 
   const serviceIndexMap = useMemo(() => {
     const indexMap = new Map<string, number>();
@@ -194,72 +208,83 @@ export default function DashboardPage() {
 
       {/* Service cards by category */}
       <section className="space-y-8">
-        {groupedVisibleServices.map((group) => (
-          <div key={group.category}>
-            <div className="mb-4 flex items-center gap-3">
-              <h2 className="font-headline text-lg font-extrabold text-white/85">{group.category}</h2>
-              <span className="text-xs font-semibold text-white/25">{group.services.length} Services</span>
-            </div>
+        {filteredServices.length === 0 ? (
+          <div className="glass-card glass-reflection rounded-2xl p-8 text-center">
+            <p className="text-sm font-semibold text-white/80">
+              {searchQuery ? 'No services match your search.' : 'No services available.'}
+            </p>
+            <p className="mt-2 text-sm text-white/35">
+              {searchQuery ? 'Try another service, category, or domain.' : 'Add a subscription template to get started.'}
+            </p>
+          </div>
+        ) : (
+          groupedVisibleServices.map((group) => (
+            <div key={group.category}>
+              <div className="mb-4 flex items-center gap-3">
+                <h2 className="font-headline text-lg font-extrabold text-white/85">{group.category}</h2>
+                <span className="text-xs font-semibold text-white/25">{group.services.length} Services</span>
+              </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-              {group.services.map((service) => {
-                const globalIndex = serviceIndexMap.get(service.id) ?? 0;
-                const dueDate = getAssumedDueDate(globalIndex);
-                const status = getAssumedStatus(globalIndex);
-                const statusClasses =
-                  status === 'active'
-                    ? 'glass-chip text-emerald-400'
-                    : status === 'expiring'
-                    ? 'glass-chip text-amber-400'
-                    : 'glass-chip text-white/30';
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                {group.services.map((service) => {
+                  const globalIndex = serviceIndexMap.get(service.id) ?? 0;
+                  const dueDate = getAssumedDueDate(globalIndex);
+                  const status = getAssumedStatus(globalIndex);
+                  const statusClasses =
+                    status === 'active'
+                      ? 'glass-chip text-emerald-400'
+                      : status === 'expiring'
+                      ? 'glass-chip text-amber-400'
+                      : 'glass-chip text-white/30';
 
-                return (
-                  <div
-                    key={`${service.category}-${service.name}`}
-                    className="glass-card glass-reflection rounded-2xl p-4"
-                  >
-                    <div className="relative z-10">
-                      <div className="mb-4 flex items-start justify-between">
-                        <img
-                          src={`https://logo.clearbit.com/${service.domain}`}
-                          alt={`${service.name} logo`}
-                          className="h-9 w-9 rounded-lg bg-white/10 object-contain p-1.5"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${statusClasses}`}>
-                          {status}
-                        </span>
-                      </div>
-
-                      <p className="text-sm font-bold text-white/90">{service.name}</p>
-                      <p className="mt-0.5 text-xs text-white/30">{getAssumedPlan(globalIndex)}</p>
-
-                      <div className="mt-4 grid grid-cols-2 gap-2">
-                        <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Monthly</p>
-                          <p className="font-headline text-xl font-bold text-white/90">${getAssumedAmount(globalIndex)}</p>
+                  return (
+                    <div
+                      key={`${service.category}-${service.name}`}
+                      className="glass-card glass-reflection rounded-2xl p-4"
+                    >
+                      <div className="relative z-10">
+                        <div className="mb-4 flex items-start justify-between">
+                          <img
+                            src={`https://logo.clearbit.com/${service.domain}`}
+                            alt={`${service.name} logo`}
+                            className="h-9 w-9 rounded-lg bg-white/10 object-contain p-1.5"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                          <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${statusClasses}`}>
+                            {status}
+                          </span>
                         </div>
-                        <div className="text-right">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Next Due</p>
-                          <p className={`text-sm font-bold ${status === 'expiring' ? 'text-rose-400' : 'text-white/70'}`}>
-                            {formatCardDueDate(dueDate)}
-                          </p>
+
+                        <p className="text-sm font-bold text-white/90">{service.name}</p>
+                        <p className="mt-0.5 text-xs text-white/30">{getAssumedPlan(globalIndex)}</p>
+
+                        <div className="mt-4 grid grid-cols-2 gap-2">
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Monthly</p>
+                            <p className="font-headline text-xl font-bold text-white/90">${getAssumedAmount(globalIndex)}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Next Due</p>
+                            <p className={`text-sm font-bold ${status === 'expiring' ? 'text-rose-400' : 'text-white/70'}`}>
+                              {formatCardDueDate(dueDate)}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
 
         {canViewMore && (
           <div className="mt-6 flex justify-center">
             <button
               type="button"
-              onClick={() => setVisibleCount((prev) => Math.min(prev + 5, services.length))}
+              onClick={() => setVisibleCount((prev) => Math.min(prev + 5, filteredServices.length))}
               className="glass-btn rounded-2xl px-6 py-2.5 text-sm font-semibold"
             >
               View More

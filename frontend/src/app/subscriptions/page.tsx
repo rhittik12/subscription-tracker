@@ -23,6 +23,7 @@ export default function SubscriptionsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subscription | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
+  
 
   const fetchSubscriptions = useCallback(async () => {
     try {
