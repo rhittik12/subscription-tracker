@@ -132,8 +132,6 @@ export function DashboardContent() {
 
   return (
     <div className="space-y-10">
-      
-
       {/* Summary cards with glow effects */}
       <div className="grid grid-cols-12 gap-6 lg:gap-8">
         {/* Monthly Spend — hero card with glow */}
@@ -224,7 +222,6 @@ export function DashboardContent() {
                 <h2 className="font-headline text-lg font-extrabold text-white/85">{group.category}</h2>
                 <span className="text-xs font-semibold text-white/25">{group.services.length} Services</span>
               </div>
-
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 {group.services.map((service) => {
                   const globalIndex = serviceIndexMap.get(service.id) ?? 0;
@@ -234,12 +231,12 @@ export function DashboardContent() {
                     status === 'active'
                       ? 'glass-chip text-emerald-400'
                       : status === 'expiring'
-                      ? 'glass-chip text-amber-400'
-                      : 'glass-chip text-white/30';
+                        ? 'glass-chip text-amber-400'
+                        : 'glass-chip text-white/30';
 
                   return (
                     <div
-                      key={`${service.category}-${service.name}`}
+                      key={service.id}
                       className="glass-card glass-reflection rounded-2xl p-4"
                     >
                       <div className="relative z-10">
