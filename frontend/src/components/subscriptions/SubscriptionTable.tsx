@@ -165,7 +165,7 @@ export function SubscriptionTable({
                             <>
                               <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />
                               <div
-                                className="absolute right-0 top-full z-20 mt-1 w-40 rounded-2xl glass-heavy py-1"
+                                className="absolute right-0 top-full z-20 mt-3 w-40 rounded-2xl glass-heavy py-1"
                                 role="menu"
                                 aria-label={`${sub.name} actions`}
                               >

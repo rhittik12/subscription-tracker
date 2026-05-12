@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Subscription, Category, SubscriptionFormData } from '@/types';
 import {
   getSubscriptions,
@@ -23,7 +23,9 @@ export default function SubscriptionsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subscription | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
-  
+  const [pendingDelete, setPendingDelete] = useState<Subscription | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const fetchSubscriptions = useCallback(async () => {
     try {
@@ -69,13 +71,30 @@ export default function SubscriptionsPage() {
     }
   }
 
-  async function handleDelete(id: number) {
-    if (!confirm('Are you sure you want to delete this subscription?')) return;
+  function handleDelete(id: number) {
+    const sub = subscriptions.find((item) => item.id === id);
+    if (sub) {
+      setDeleteError(null);
+      setPendingDelete(sub);
+    }
+  }
+
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    const subscriptionToDelete = pendingDelete;
+
     try {
-      await deleteSubscription(id);
+      setDeleteError(null);
+      setDeletingId(subscriptionToDelete.id);
+      await deleteSubscription(subscriptionToDelete.id);
+      setSubscriptions((current) => current.filter((sub) => sub.id !== subscriptionToDelete.id));
+      setPendingDelete(null);
       await fetchSubscriptions();
     } catch (error) {
       console.error('Failed to delete subscription:', error);
+      setDeleteError('Could not delete this subscription. Please try again.');
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -135,6 +154,61 @@ export default function SubscriptionsPage() {
       />
 
       <TemplateLibrary onEditTemplate={handleEditTemplate} />
+
+      {pendingDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-md"
+            onClick={() => {
+              if (deletingId !== pendingDelete.id) setPendingDelete(null);
+            }}
+          />
+          <div className="glass-card relative w-full max-w-sm rounded-3xl p-5">
+            <div className="relative z-10">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="rounded-2xl bg-rose-500/15 p-2.5 text-rose-400 ring-1 ring-rose-500/20">
+                  <Trash2 size={18} />
+                </div>
+                <div>
+                  <h2 className="font-headline text-lg font-bold text-white/90">Delete subscription?</h2>
+                  <p className="mt-1 text-sm text-white/40">{pendingDelete.name}</p>
+                </div>
+              </div>
+
+              <p className="text-sm text-white/55">
+                This will remove the subscription from your tracker.
+              </p>
+              {deleteError && (
+                <p className="mt-3 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
+                  {deleteError}
+                </p>
+              )}
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteError(null);
+                    setPendingDelete(null);
+                  }}
+                  disabled={deletingId === pendingDelete.id}
+                  className="glass-chip rounded-xl px-4 py-2.5 text-sm font-semibold text-white/55 transition-colors hover:text-white/80 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDelete}
+                  disabled={deletingId === pendingDelete.id}
+                  className="rounded-xl bg-rose-500/90 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-rose-500 disabled:opacity-50"
+                >
+                  {deletingId === pendingDelete.id ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AddEditModal
         isOpen={modalOpen}
