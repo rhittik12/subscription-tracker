@@ -79,7 +79,7 @@ export function TemplateLibrary({ onEditTemplate }: TemplateLibraryProps) {
               {openMenuId === template.id && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                  <div className="absolute right-1 top-9 z-20 w-28 rounded-xl glass-heavy py-1">
+                  <div className="absolute right-1 top-15 z-20 w-28 rounded-xl glass-heavy py-1">
                     <button
                       type="button"
                       className="flex w-full items-center gap-1.5 px-2.5 py-2 text-xs text-white/70 hover:bg-white/[0.06] transition-colors"
