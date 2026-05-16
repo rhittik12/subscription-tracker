@@ -45,11 +45,11 @@ export const categories = pgTable(
     icon: varchar('icon', { length: 50 }).notNull().default('folder'),
     color: varchar('color', { length: 20 }).notNull().default('#6366f1'),
   },
-  (table) => ({
-    nameLowerUniqueIndex: uniqueIndex('idx_categories_name_lower_unique').on(
-      sql`LOWER(${table.name})`
-    ),
-  })
+  // Case-insensitive unique index `idx_categories_name_lower_unique` removed
+  // from the schema here to match migration history and avoid re-creation.
+  // To restore: replace this `undefined` with a `uniqueIndex(...).on(...)` entry
+  // and generate a migration.
+  undefined
 );
 
 export const subscriptionTemplates = pgTable('subscription_templates', {
