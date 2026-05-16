@@ -55,8 +55,9 @@ backend/
   src/
     config/db.ts
     cron/reminderCron.ts
-    db/schema.sql
-    db/seed.sql
+    db/index.ts
+    db/schema.ts
+    db/seed.ts
     routes/
     services/
     index.ts
@@ -197,8 +198,9 @@ If this is not set, the frontend defaults to `http://localhost:4000`.
 
 ## Database Setup
 
-The PostgreSQL schema lives in [backend/src/db/schema.sql](backend/src/db/schema.sql).
-The sample data lives in [backend/src/db/seed.sql](backend/src/db/seed.sql).
+The database schema lives in [backend/src/db/schema.ts](backend/src/db/schema.ts).
+The sample data lives in [backend/src/db/seed.ts](backend/src/db/seed.ts).
+Drizzle is configured through [backend/drizzle.config.ts](backend/drizzle.config.ts).
 
 ### Tables
 
@@ -212,15 +214,19 @@ The database includes:
 
 ### Suggested initialization order
 
-1. Create the database.
-2. Run `schema.sql`.
-3. Run `seed.sql`.
-4. Start the backend.
-5. Start the frontend.
+1. Set `DATABASE_URL` to your Neon PostgreSQL connection string.
+2. Run `npm run db:generate` from the `backend` folder to generate migrations from the Drizzle schema.
+3. Run `npm run db:push` from the `backend` folder to apply the schema to Neon.
+4. Run `npm run db:seed` from the `backend` folder to load the TypeScript seed data.
+5. Start the backend.
+6. Start the frontend.
 
-### Important note about the seed data
+### Modern database workflow
 
-The seed file uses the default category order and category IDs assumed by the inserted categories. Run the schema and seed together on a fresh database to keep the template mappings aligned.
+- `backend/src/db/schema.ts` is the single source of truth for tables, enums, indexes, and relations.
+- `backend/drizzle.config.ts` tells Drizzle Kit where the schema lives and where to write migrations.
+- `backend/src/db/seed.ts` replaces the old SQL seed file with typed inserts.
+- `npm run db:studio` opens Drizzle Studio for inspecting Neon data during development.
 
 ## Installation
 
