@@ -2,17 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { getAnalyticsSummary } from '@/lib/api';
-import { AnalyticsSummary } from '@/types';
+import { AnalyticsSummary, Subscription } from '@/types';
 import { Plus, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
-import {
-  defaultServiceTemplates,
-  readServiceTemplates,
-  ServiceTemplate,
-  SERVICE_TEMPLATES_UPDATED_EVENT,
-} from '@/lib/serviceTemplates';
+import { getSubscriptions } from '@/lib/api';
 
 const categoryOrder = [
   'Entertainment',
@@ -52,7 +47,7 @@ function formatCardDueDate(dateStr: string): string {
 
 export function DashboardContent() {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
-  const [services, setServices] = useState<ServiceTemplate[]>(defaultServiceTemplates);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(5);
   const searchParams = useSearchParams();
@@ -73,17 +68,16 @@ export function DashboardContent() {
   }, []);
 
   useEffect(() => {
-    const refresh = () => {
-      setServices(readServiceTemplates());
+    const refresh = async () => {
+      const subscriptionData = await getSubscriptions();
+      setSubscriptions(subscriptionData);
     };
 
     refresh();
-    window.addEventListener(SERVICE_TEMPLATES_UPDATED_EVENT, refresh);
-    window.addEventListener('storage', refresh);
+    window.addEventListener('subscriptions-updated', refresh);
 
     return () => {
-      window.removeEventListener(SERVICE_TEMPLATES_UPDATED_EVENT, refresh);
-      window.removeEventListener('storage', refresh);
+      window.removeEventListener('subscriptions-updated', refresh);
     };
   }, []);
 
@@ -93,41 +87,43 @@ export function DashboardContent() {
   const upcomingTotal = summary
     ? formatCurrency(summary.renewing_this_week > 0 ? summary.total_monthly * 0.32 : 0, summary.currency)
     : '--';
-  const filteredServices = useMemo(() => {
-    if (!searchQuery) {
-      return services;
-    }
-
-    return services.filter((service) => {
-      const haystacks = [service.name, service.category, service.domain].map((value) => value.toLowerCase());
+  const filteredSubscriptions = useMemo(() => {
+    if (!searchQuery) return subscriptions;
+    return subscriptions.filter((sub) => {
+      const haystacks = [
+        sub.name,
+        sub.category_name ?? '',
+        sub.notes ?? '',
+        sub.template_id?.toString() ?? ''
+      ].map((v) => String(v).toLowerCase());
       return haystacks.some((value) => value.includes(searchQuery));
     });
-  }, [searchQuery, services]);
+  }, [searchQuery, subscriptions]);
 
-  const visibleServices = useMemo(() => filteredServices.slice(0, visibleCount), [filteredServices, visibleCount]);
-  const canViewMore = visibleCount < filteredServices.length;
+  const visibleSubscriptions = useMemo(() => filteredSubscriptions.slice(0, visibleCount), [filteredSubscriptions, visibleCount]);
+  const canViewMore = visibleCount < filteredSubscriptions.length;
 
-  const serviceIndexMap = useMemo(() => {
-    const indexMap = new Map<string, number>();
-    services.forEach((service, index) => {
-      indexMap.set(service.id, index);
+  const subscriptionIndexMap = useMemo(() => {
+    const indexMap = new Map<number, number>();
+    subscriptions.forEach((subscription, index) => {
+      indexMap.set(subscription.id, index);
     });
     return indexMap;
-  }, [services]);
+  }, [subscriptions]);
 
   useEffect(() => {
-    setVisibleCount((prev) => Math.min(prev, Math.max(services.length, 5)));
-  }, [services.length]);
+    setVisibleCount((prev) => Math.min(prev, Math.max(subscriptions.length, 5)));
+  }, [subscriptions.length]);
 
-  const groupedVisibleServices = useMemo(
+  const groupedVisibleSubscriptions = useMemo(
     () =>
       categoryOrder
         .map((category) => ({
           category,
-          services: visibleServices.filter((service) => service.category === category),
+          services: visibleSubscriptions.filter((s) => s.category_name === category),
         }))
-        .filter((group) => group.services.length > 0),
-    [visibleServices]
+        .filter((g) => g.services.length > 0),
+    [visibleSubscriptions]
   );
 
   return (
@@ -206,7 +202,7 @@ export function DashboardContent() {
 
       {/* Service cards by category */}
       <section className="space-y-8">
-        {filteredServices.length === 0 ? (
+        {filteredSubscriptions.length === 0 ? (
           <div className="glass-card glass-reflection rounded-2xl p-8 text-center">
             <p className="text-sm font-semibold text-white/80">
               {searchQuery ? 'No services match your search.' : 'No services available.'}
@@ -216,7 +212,7 @@ export function DashboardContent() {
             </p>
           </div>
         ) : (
-          groupedVisibleServices.map((group) => (
+          groupedVisibleSubscriptions.map((group) => (
             <div key={group.category}>
               <div className="mb-4 flex items-center gap-3">
                 <h2 className="font-headline text-lg font-extrabold text-white/85">{group.category}</h2>
@@ -224,7 +220,7 @@ export function DashboardContent() {
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 {group.services.map((service) => {
-                  const globalIndex = serviceIndexMap.get(service.id) ?? 0;
+                  const globalIndex = subscriptionIndexMap.get(service.id) ?? 0;
                   const dueDate = getAssumedDueDate(globalIndex);
                   const status = getAssumedStatus(globalIndex);
                   const statusClasses =
@@ -242,7 +238,7 @@ export function DashboardContent() {
                       <div className="relative z-10">
                         <div className="mb-4 flex items-start justify-between">
                           <img
-                            src={`https://logo.clearbit.com/${service.domain}`}
+                            src={service.logo_url ?? '/placeholder-logo.png'}
                             alt={`${service.name} logo`}
                             className="h-9 w-9 rounded-lg bg-white/10 object-contain p-1.5"
                             loading="lazy"
@@ -281,7 +277,7 @@ export function DashboardContent() {
           <div className="mt-6 flex justify-center">
             <button
               type="button"
-              onClick={() => setVisibleCount((prev) => Math.min(prev + 5, filteredServices.length))}
+              onClick={() => setVisibleCount((prev) => Math.min(prev + 5, filteredSubscriptions.length))}
               className="glass-btn rounded-2xl px-6 py-2.5 text-sm font-semibold"
             >
               View More
