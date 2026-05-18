@@ -2,17 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { getAnalyticsSummary } from '@/lib/api';
-import { AnalyticsSummary } from '@/types';
+import { AnalyticsSummary, Subscription } from '@/types';
 import { Plus, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { formatCurrency } from '@/lib/utils';
-import {
-  defaultServiceTemplates,
-  readServiceTemplates,
-  ServiceTemplate,
-  SERVICE_TEMPLATES_UPDATED_EVENT,
-} from '@/lib/serviceTemplates';
+import { formatCurrency, getDaysUntil } from '@/lib/utils';
+import { getSubscriptions } from '@/lib/api';
 
 const categoryOrder = [
   'Entertainment',
@@ -23,28 +18,7 @@ const categoryOrder = [
   'Gaming',
 ];
 
-function getAssumedDueDate(index: number): string {
-  const today = new Date();
-  const offsetDays = (index % 28) + 2;
-  const dueDate = new Date(today);
-  dueDate.setDate(today.getDate() + offsetDays);
-  return dueDate.toISOString();
-}
-
-function getAssumedPlan(index: number): string {
-  const plans = ['Individual', 'Family Plan', 'Standard', 'Pro', 'Premium'];
-  return plans[index % plans.length];
-}
-
-function getAssumedAmount(index: number): string {
-  const prices = ['19.99', '16.99', '13.99', '99.00', '7.25', '54.99', '11.99', '120.00'];
-  return prices[index % prices.length];
-}
-
-function getAssumedStatus(index: number): 'active' | 'expiring' | 'paused' {
-  const statuses: Array<'active' | 'expiring' | 'paused'> = ['active', 'active', 'expiring', 'paused'];
-  return statuses[index % statuses.length];
-}
+// Card values are rendered from real subscription fields (amount, billing_cycle, next_renewal_date, status).
 
 function formatCardDueDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
@@ -52,7 +26,7 @@ function formatCardDueDate(dateStr: string): string {
 
 export function DashboardContent() {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
-  const [services, setServices] = useState<ServiceTemplate[]>(defaultServiceTemplates);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(5);
   const searchParams = useSearchParams();
@@ -73,17 +47,20 @@ export function DashboardContent() {
   }, []);
 
   useEffect(() => {
-    const refresh = () => {
-      setServices(readServiceTemplates());
+    const refresh = async () => {
+      try {
+        const subscriptionData = await getSubscriptions();
+        setSubscriptions(subscriptionData);
+      } catch (error) {
+        console.error('Failed to fetch subscriptions:', error);
+      }
     };
 
     refresh();
-    window.addEventListener(SERVICE_TEMPLATES_UPDATED_EVENT, refresh);
-    window.addEventListener('storage', refresh);
+    window.addEventListener('subscriptions-updated', refresh);
 
     return () => {
-      window.removeEventListener(SERVICE_TEMPLATES_UPDATED_EVENT, refresh);
-      window.removeEventListener('storage', refresh);
+      window.removeEventListener('subscriptions-updated', refresh);
     };
   }, []);
 
@@ -93,41 +70,43 @@ export function DashboardContent() {
   const upcomingTotal = summary
     ? formatCurrency(summary.renewing_this_week > 0 ? summary.total_monthly * 0.32 : 0, summary.currency)
     : '--';
-  const filteredServices = useMemo(() => {
-    if (!searchQuery) {
-      return services;
-    }
-
-    return services.filter((service) => {
-      const haystacks = [service.name, service.category, service.domain].map((value) => value.toLowerCase());
+  const filteredSubscriptions = useMemo(() => {
+    if (!searchQuery) return subscriptions;
+    return subscriptions.filter((sub) => {
+      const haystacks = [
+        sub.name,
+        sub.category_name ?? '',
+        sub.notes ?? '',
+        sub.template_id?.toString() ?? ''
+      ].map((v) => String(v).toLowerCase());
       return haystacks.some((value) => value.includes(searchQuery));
     });
-  }, [searchQuery, services]);
+  }, [searchQuery, subscriptions]);
 
-  const visibleServices = useMemo(() => filteredServices.slice(0, visibleCount), [filteredServices, visibleCount]);
-  const canViewMore = visibleCount < filteredServices.length;
+  const visibleSubscriptions = useMemo(() => filteredSubscriptions.slice(0, visibleCount), [filteredSubscriptions, visibleCount]);
+  const canViewMore = visibleCount < filteredSubscriptions.length;
 
-  const serviceIndexMap = useMemo(() => {
-    const indexMap = new Map<string, number>();
-    services.forEach((service, index) => {
-      indexMap.set(service.id, index);
+  const subscriptionIndexMap = useMemo(() => {
+    const indexMap = new Map<number, number>();
+    subscriptions.forEach((subscription, index) => {
+      indexMap.set(subscription.id, index);
     });
     return indexMap;
-  }, [services]);
+  }, [subscriptions]);
 
   useEffect(() => {
-    setVisibleCount((prev) => Math.min(prev, Math.max(services.length, 5)));
-  }, [services.length]);
+    setVisibleCount((prev) => Math.min(prev, Math.max(subscriptions.length, 5)));
+  }, [subscriptions.length]);
 
-  const groupedVisibleServices = useMemo(
+  const groupedVisibleSubscriptions = useMemo(
     () =>
       categoryOrder
         .map((category) => ({
           category,
-          services: visibleServices.filter((service) => service.category === category),
+          services: visibleSubscriptions.filter((s) => s.category_name === category),
         }))
-        .filter((group) => group.services.length > 0),
-    [visibleServices]
+        .filter((g) => g.services.length > 0),
+    [visibleSubscriptions]
   );
 
   return (
@@ -206,7 +185,7 @@ export function DashboardContent() {
 
       {/* Service cards by category */}
       <section className="space-y-8">
-        {filteredServices.length === 0 ? (
+        {filteredSubscriptions.length === 0 ? (
           <div className="glass-card glass-reflection rounded-2xl p-8 text-center">
             <p className="text-sm font-semibold text-white/80">
               {searchQuery ? 'No services match your search.' : 'No services available.'}
@@ -216,7 +195,7 @@ export function DashboardContent() {
             </p>
           </div>
         ) : (
-          groupedVisibleServices.map((group) => (
+          groupedVisibleSubscriptions.map((group) => (
             <div key={group.category}>
               <div className="mb-4 flex items-center gap-3">
                 <h2 className="font-headline text-lg font-extrabold text-white/85">{group.category}</h2>
@@ -224,15 +203,10 @@ export function DashboardContent() {
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 {group.services.map((service) => {
-                  const globalIndex = serviceIndexMap.get(service.id) ?? 0;
-                  const dueDate = getAssumedDueDate(globalIndex);
-                  const status = getAssumedStatus(globalIndex);
-                  const statusClasses =
-                    status === 'active'
-                      ? 'glass-chip text-emerald-400'
-                      : status === 'expiring'
-                        ? 'glass-chip text-amber-400'
-                        : 'glass-chip text-white/30';
+                  const dueDate = service.next_renewal_date;
+                  const status = service.status;
+                  const daysUntil = getDaysUntil(dueDate);
+                  const isExpiring = daysUntil <= 7 && daysUntil >= 0;
 
                   return (
                     <div
@@ -242,28 +216,34 @@ export function DashboardContent() {
                       <div className="relative z-10">
                         <div className="mb-4 flex items-start justify-between">
                           <img
-                            src={`https://logo.clearbit.com/${service.domain}`}
+                            src={service.logo_url ?? '/placeholder-logo.png'}
                             alt={`${service.name} logo`}
                             className="h-9 w-9 rounded-lg bg-white/10 object-contain p-1.5"
                             loading="lazy"
                             decoding="async"
                           />
-                          <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${statusClasses}`}>
-                            {status}
+                          <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${
+                            isExpiring
+                              ? 'glass-chip text-amber-400'
+                              : status === 'active'
+                              ? 'glass-chip text-emerald-400'
+                              : 'glass-chip text-white/30'
+                          }`}>
+                            {isExpiring ? 'expiring' : status}
                           </span>
                         </div>
 
                         <p className="text-sm font-bold text-white/90">{service.name}</p>
-                        <p className="mt-0.5 text-xs text-white/30">{getAssumedPlan(globalIndex)}</p>
+                        <p className="mt-0.5 text-xs text-white/30">{service.billing_cycle}</p>
 
                         <div className="mt-4 grid grid-cols-2 gap-2">
                           <div>
                             <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Monthly</p>
-                            <p className="font-headline text-xl font-bold text-white/90">${getAssumedAmount(globalIndex)}</p>
+                            <p className="font-headline text-xl font-bold text-white/90">{formatCurrency(parseFloat(service.amount), service.currency)}</p>
                           </div>
                           <div className="text-right">
                             <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Next Due</p>
-                            <p className={`text-sm font-bold ${status === 'expiring' ? 'text-rose-400' : 'text-white/70'}`}>
+                            <p className={`text-sm font-bold ${isExpiring ? 'text-rose-400' : 'text-white/70'}`}>
                               {formatCardDueDate(dueDate)}
                             </p>
                           </div>
@@ -281,7 +261,7 @@ export function DashboardContent() {
           <div className="mt-6 flex justify-center">
             <button
               type="button"
-              onClick={() => setVisibleCount((prev) => Math.min(prev + 5, filteredServices.length))}
+              onClick={() => setVisibleCount((prev) => Math.min(prev + 5, filteredSubscriptions.length))}
               className="glass-btn rounded-2xl px-6 py-2.5 text-sm font-semibold"
             >
               View More

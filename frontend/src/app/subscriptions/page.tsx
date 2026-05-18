@@ -66,6 +66,8 @@ export default function SubscriptionsPage() {
       setEditingSub(null);
       setSelectedTemplate(null);
       await fetchSubscriptions();
+      // notify other views (dashboard) to refresh
+      window.dispatchEvent(new Event('subscriptions-updated'));
     } catch (error) {
       console.error('Failed to save subscription:', error);
     }
@@ -90,6 +92,8 @@ export default function SubscriptionsPage() {
       setSubscriptions((current) => current.filter((sub) => sub.id !== subscriptionToDelete.id));
       setPendingDelete(null);
       await fetchSubscriptions();
+      // notify dashboard to refresh
+      window.dispatchEvent(new Event('subscriptions-updated'));
     } catch (error) {
       console.error('Failed to delete subscription:', error);
       setDeleteError('Could not delete this subscription. Please try again.');
@@ -102,6 +106,7 @@ export default function SubscriptionsPage() {
     try {
       await updateSubscriptionStatus(id, status);
       await fetchSubscriptions();
+      window.dispatchEvent(new Event('subscriptions-updated'));
     } catch (error) {
       console.error('Failed to update status:', error);
     }
