@@ -6,7 +6,7 @@ import { AnalyticsSummary, Subscription } from '@/types';
 import { Plus, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, getDaysUntil } from '@/lib/utils';
 import { getSubscriptions } from '@/lib/api';
 
 const categoryOrder = [
@@ -18,28 +18,7 @@ const categoryOrder = [
   'Gaming',
 ];
 
-function getAssumedDueDate(index: number): string {
-  const today = new Date();
-  const offsetDays = (index % 28) + 2;
-  const dueDate = new Date(today);
-  dueDate.setDate(today.getDate() + offsetDays);
-  return dueDate.toISOString();
-}
-
-function getAssumedPlan(index: number): string {
-  const plans = ['Individual', 'Family Plan', 'Standard', 'Pro', 'Premium'];
-  return plans[index % plans.length];
-}
-
-function getAssumedAmount(index: number): string {
-  const prices = ['19.99', '16.99', '13.99', '99.00', '7.25', '54.99', '11.99', '120.00'];
-  return prices[index % prices.length];
-}
-
-function getAssumedStatus(index: number): 'active' | 'expiring' | 'paused' {
-  const statuses: Array<'active' | 'expiring' | 'paused'> = ['active', 'active', 'expiring', 'paused'];
-  return statuses[index % statuses.length];
-}
+// Card values are rendered from real subscription fields (amount, billing_cycle, next_renewal_date, status).
 
 function formatCardDueDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
@@ -69,8 +48,12 @@ export function DashboardContent() {
 
   useEffect(() => {
     const refresh = async () => {
-      const subscriptionData = await getSubscriptions();
-      setSubscriptions(subscriptionData);
+      try {
+        const subscriptionData = await getSubscriptions();
+        setSubscriptions(subscriptionData);
+      } catch (error) {
+        console.error('Failed to fetch subscriptions:', error);
+      }
     };
 
     refresh();
@@ -220,15 +203,10 @@ export function DashboardContent() {
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 {group.services.map((service) => {
-                  const globalIndex = subscriptionIndexMap.get(service.id) ?? 0;
-                  const dueDate = getAssumedDueDate(globalIndex);
-                  const status = getAssumedStatus(globalIndex);
-                  const statusClasses =
-                    status === 'active'
-                      ? 'glass-chip text-emerald-400'
-                      : status === 'expiring'
-                        ? 'glass-chip text-amber-400'
-                        : 'glass-chip text-white/30';
+                  const dueDate = service.next_renewal_date;
+                  const status = service.status;
+                  const daysUntil = getDaysUntil(dueDate);
+                  const isExpiring = daysUntil <= 7 && daysUntil >= 0;
 
                   return (
                     <div
@@ -244,22 +222,28 @@ export function DashboardContent() {
                             loading="lazy"
                             decoding="async"
                           />
-                          <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${statusClasses}`}>
-                            {status}
+                          <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${
+                            isExpiring
+                              ? 'glass-chip text-amber-400'
+                              : status === 'active'
+                              ? 'glass-chip text-emerald-400'
+                              : 'glass-chip text-white/30'
+                          }`}>
+                            {isExpiring ? 'expiring' : status}
                           </span>
                         </div>
 
                         <p className="text-sm font-bold text-white/90">{service.name}</p>
-                        <p className="mt-0.5 text-xs text-white/30">{getAssumedPlan(globalIndex)}</p>
+                        <p className="mt-0.5 text-xs text-white/30">{service.billing_cycle}</p>
 
                         <div className="mt-4 grid grid-cols-2 gap-2">
                           <div>
                             <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Monthly</p>
-                            <p className="font-headline text-xl font-bold text-white/90">${getAssumedAmount(globalIndex)}</p>
+                            <p className="font-headline text-xl font-bold text-white/90">{formatCurrency(parseFloat(service.amount), service.currency)}</p>
                           </div>
                           <div className="text-right">
                             <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25">Next Due</p>
-                            <p className={`text-sm font-bold ${status === 'expiring' ? 'text-rose-400' : 'text-white/70'}`}>
+                            <p className={`text-sm font-bold ${isExpiring ? 'text-rose-400' : 'text-white/70'}`}>
                               {formatCardDueDate(dueDate)}
                             </p>
                           </div>
