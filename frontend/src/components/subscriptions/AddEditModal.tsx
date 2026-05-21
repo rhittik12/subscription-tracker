@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { X, Search } from 'lucide-react';
 import { Category, SubscriptionTemplate, Subscription, CURRENCIES, BILLING_CYCLES } from '@/types';
 import { getTemplates } from '@/lib/api';
-import { ServiceTemplate } from '@/lib/serviceTemplates';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -30,7 +29,7 @@ interface AddEditModalProps {
   onClose: () => void;
   onSubmit: (data: FormData) => void;
   subscription: Subscription | null;
-  initialTemplate?: ServiceTemplate | null;
+  initialTemplate?: SubscriptionTemplate | null;
   categories: Category[];
 }
 
@@ -48,6 +47,20 @@ export function AddEditModal({
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
 
   const isEditing = !!subscription;
+
+  function getTemplateLogoUrl(template: SubscriptionTemplate) {
+    if (template.logo_url) return template.logo_url;
+
+    if (template.website_url) {
+      try {
+        return `https://logo.clearbit.com/${new URL(template.website_url).hostname}`;
+      } catch {
+        return null;
+      }
+    }
+
+    return null;
+  }
 
   const {
     register,
@@ -101,22 +114,18 @@ export function AddEditModal({
         template_id: subscription.template_id,
       });
     } else if (initialTemplate) {
-      const matchedCategoryId = categories.find(
-        (category) => category.name.toLowerCase() === initialTemplate.category.toLowerCase()
-      )?.id;
-
       reset({
         name: initialTemplate.name,
-        category_id: matchedCategoryId || categories[0]?.id || 1,
-        category_name: initialTemplate.category,
+        category_id: initialTemplate.category_id || categories[0]?.id || 1,
+        category_name: initialTemplate.category_name,
         amount: 0,
         currency: 'INR',
         billing_cycle: 'monthly',
         next_renewal_date: '',
         start_date: null,
         notes: null,
-        logo_url: `https://logo.clearbit.com/${initialTemplate.domain}`,
-        template_id: null,
+        logo_url: getTemplateLogoUrl(initialTemplate),
+        template_id: initialTemplate.id,
       });
     } else {
       reset({
@@ -140,7 +149,7 @@ export function AddEditModal({
     setValue('category_id', template.category_id);
     setValue('category_name', template.category_name);
     setValue('currency', template.default_currency);
-    setValue('logo_url', template.logo_url);
+    setValue('logo_url', getTemplateLogoUrl(template));
     setValue('template_id', template.id);
     setTemplateSearch('');
     setShowTemplates(false);

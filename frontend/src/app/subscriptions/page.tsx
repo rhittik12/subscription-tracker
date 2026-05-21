@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { Subscription, Category, SubscriptionFormData } from '@/types';
+import { SubscriptionTemplate } from '@/types';
 import {
   getSubscriptions,
   getCategories,
@@ -11,7 +12,6 @@ import {
   deleteSubscription,
   updateSubscriptionStatus,
 } from '@/lib/api';
-import { ServiceTemplate } from '@/lib/serviceTemplates';
 import { SubscriptionTable } from '@/components/subscriptions/SubscriptionTable';
 import { AddEditModal } from '@/components/subscriptions/AddEditModal';
 import { TemplateLibrary } from '@/components/subscriptions/TemplateLibrary';
@@ -22,7 +22,7 @@ export default function SubscriptionsPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subscription | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<SubscriptionTemplate | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Subscription | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -118,7 +118,7 @@ export default function SubscriptionsPage() {
     setModalOpen(true);
   }
 
-  function handleEditTemplate(template: ServiceTemplate) {
+  function handleEditTemplate(template: SubscriptionTemplate) {
     setEditingSub(null);
     setSelectedTemplate(template);
     setModalOpen(true);

@@ -4,6 +4,7 @@ import type {
   SubscriptionFormData,
   Category,
   SubscriptionTemplate,
+  SubscriptionTemplateFormData,
   AnalyticsSummary,
   UserSettings,
   ExchangeRates,
@@ -58,6 +59,23 @@ export async function getCategories(): Promise<Category[]> {
 export async function getTemplates(category?: number): Promise<SubscriptionTemplate[]> {
   const { data } = await api.get('/api/templates', { params: category ? { category } : {} });
   return data;
+}
+
+export async function createTemplate(template: SubscriptionTemplateFormData): Promise<SubscriptionTemplate> {
+  const { data } = await api.post('/api/templates', template);
+  return data;
+}
+
+export async function updateTemplate(
+  id: number,
+  template: SubscriptionTemplateFormData
+): Promise<SubscriptionTemplate> {
+  const { data } = await api.put(`/api/templates/${id}`, template);
+  return data;
+}
+
+export async function deleteTemplate(id: number): Promise<void> {
+  await api.delete(`/api/templates/${id}`);
 }
 
 // Analytics

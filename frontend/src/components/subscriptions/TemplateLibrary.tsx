@@ -2,47 +2,64 @@
 
 import { useEffect, useState } from 'react';
 import { Edit, MoreHorizontal, Trash2 } from 'lucide-react';
-import {
-  readServiceTemplates,
-  ServiceTemplate,
-  writeServiceTemplates,
-  SERVICE_TEMPLATES_UPDATED_EVENT,
-} from '@/lib/serviceTemplates';
+import { SubscriptionTemplate } from '@/types';
+import { deleteTemplate, getTemplates } from '@/lib/api';
 
 interface TemplateLibraryProps {
-  onEditTemplate: (template: ServiceTemplate) => void;
+  onEditTemplate: (template: SubscriptionTemplate) => void;
 }
 
 export function TemplateLibrary({ onEditTemplate }: TemplateLibraryProps) {
-  const [templates, setTemplates] = useState<ServiceTemplate[]>([]);
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<SubscriptionTemplate[]>([]);
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   useEffect(() => {
-    const refresh = () => setTemplates(readServiceTemplates());
+    async function refresh() {
+      try {
+        const data = await getTemplates();
+        setTemplates(data);
+      } catch (error) {
+        console.error('Failed to fetch templates:', error);
+      }
+    }
+
     refresh();
-
-    window.addEventListener(SERVICE_TEMPLATES_UPDATED_EVENT, refresh);
-    window.addEventListener('storage', refresh);
-
-    return () => {
-      window.removeEventListener(SERVICE_TEMPLATES_UPDATED_EVENT, refresh);
-      window.removeEventListener('storage', refresh);
-    };
   }, []);
 
-  function handleDelete(id: string) {
-    const filtered = templates.filter((template) => template.id !== id);
-    setTemplates(filtered);
-    writeServiceTemplates(filtered);
+  async function handleDelete(id: number) {
+    try {
+      await deleteTemplate(id);
+      setTemplates((current) => current.filter((template) => template.id !== id));
+    } catch (error) {
+      console.error('Failed to delete template:', error);
+    }
     setOpenMenuId(null);
   }
 
-  function handleEdit(id: string) {
+  function handleEdit(id: number) {
     const current = templates.find((template) => template.id === id);
     if (!current) return;
 
     onEditTemplate(current);
     setOpenMenuId(null);
+  }
+
+  function getTemplateLogo(template: SubscriptionTemplate) {
+    if (template.logo_url) return template.logo_url;
+
+    if (template.website_url) {
+      try {
+        return `https://logo.clearbit.com/${new URL(template.website_url).hostname}`;
+      } catch {
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  function getInitial(name: string) {
+    return name.trim().charAt(0).toUpperCase();
   }
 
   return (
@@ -60,11 +77,17 @@ export function TemplateLibrary({ onEditTemplate }: TemplateLibraryProps) {
               className="relative flex items-center justify-between rounded-xl glass-chip p-2.5 transition-all duration-300"
             >
               <div className="flex min-w-0 items-center gap-2">
-                <img
-                  src={`https://logo.clearbit.com/${template.domain}`}
-                  alt={`${template.name} logo`}
-                  className="h-7 w-7 rounded-lg bg-white/10 object-contain p-1"
-                />
+                {getTemplateLogo(template) ? (
+                  <img
+                    src={getTemplateLogo(template) || undefined}
+                    alt={`${template.name} logo`}
+                    className="h-7 w-7 rounded-lg bg-white/10 object-contain p-1"
+                  />
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-[10px] font-bold text-white/70">
+                    {getInitial(template.name)}
+                  </div>
+                )}
                 <span className="truncate text-xs font-semibold text-white/75">{template.name}</span>
               </div>
 
