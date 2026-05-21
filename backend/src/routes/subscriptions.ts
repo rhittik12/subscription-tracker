@@ -59,9 +59,16 @@ router.get('/', async (req: Request, res: Response) => {
   try {
     const { category, status, billing_cycle, search } = req.query;
     let query = `
-      SELECT s.*, c.name as category_name, c.icon as category_icon, c.color as category_color
+      SELECT
+        s.*,
+        COALESCE(s.logo_url, t.logo_url) as logo_url,
+        c.name as category_name,
+        c.icon as category_icon,
+        c.color as category_color,
+        t.logo_url as template_logo_url
       FROM subscriptions s
       JOIN categories c ON s.category_id = c.id
+      LEFT JOIN subscription_templates t ON s.template_id = t.id
       WHERE 1=1
     `;
     const params: any[] = [];
@@ -98,9 +105,16 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const result = await pool.query(
-      `SELECT s.*, c.name as category_name, c.icon as category_icon, c.color as category_color
+      `SELECT
+         s.*,
+         COALESCE(s.logo_url, t.logo_url) as logo_url,
+         c.name as category_name,
+         c.icon as category_icon,
+         c.color as category_color,
+         t.logo_url as template_logo_url
        FROM subscriptions s
        JOIN categories c ON s.category_id = c.id
+       LEFT JOIN subscription_templates t ON s.template_id = t.id
        WHERE s.id = $1`,
       [req.params.id]
     );

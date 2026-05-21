@@ -15,6 +15,14 @@ export interface SubscriptionTemplate {
   website_url: string | null;
 }
 
+export interface SubscriptionTemplateFormData {
+  name: string;
+  category_id: number;
+  default_currency: string;
+  logo_url?: string | null;
+  website_url?: string | null;
+}
+
 export interface Subscription {
   id: number;
   name: string;

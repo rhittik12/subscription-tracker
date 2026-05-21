@@ -29,6 +29,10 @@ export function DashboardContent() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(5);
+
+  function getInitial(name: string) {
+    return name.trim().charAt(0).toUpperCase();
+  }
   const searchParams = useSearchParams();
   const searchQuery = (searchParams.get('q') ?? '').trim().toLowerCase();
 
@@ -215,13 +219,19 @@ export function DashboardContent() {
                     >
                       <div className="relative z-10">
                         <div className="mb-4 flex items-start justify-between">
-                          <img
-                            src={service.logo_url ?? '/placeholder-logo.png'}
-                            alt={`${service.name} logo`}
-                            className="h-9 w-9 rounded-lg bg-white/10 object-contain p-1.5"
-                            loading="lazy"
-                            decoding="async"
-                          />
+                          {service.logo_url ? (
+                            <img
+                              src={service.logo_url}
+                              alt={`${service.name} logo`}
+                              className="h-9 w-9 rounded-lg bg-white/10 object-contain p-1.5"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-xs font-bold text-white/70">
+                              {getInitial(service.name)}
+                            </div>
+                          )}
                           <span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${
                             isExpiring
                               ? 'glass-chip text-amber-400'
