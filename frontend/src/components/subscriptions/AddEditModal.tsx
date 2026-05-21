@@ -119,7 +119,7 @@ export function AddEditModal({
         category_id: initialTemplate.category_id || categories[0]?.id || 1,
         category_name: initialTemplate.category_name,
         amount: 0,
-        currency: 'INR',
+        currency: initialTemplate.default_currency,
         billing_cycle: 'monthly',
         next_renewal_date: '',
         start_date: null,
@@ -230,18 +230,24 @@ export function AddEditModal({
                     <div className="p-3 text-sm text-white/30">No templates found</div>
                   ) : (
                     filteredTemplates.map((t) => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => selectTemplate(t)}
-                        className="flex w-full items-center gap-3 p-3 text-left text-sm hover:bg-white/[0.06] transition-colors"
-                      >
-                        {t.logo_url && (
-                          <img src={t.logo_url} alt={t.name} className="h-6 w-6 rounded-lg object-contain bg-white/10 p-0.5" />
-                        )}
-                        <span className="text-white/80">{t.name}</span>
-                        <span className="ml-auto text-xs text-white/30">{t.category_name}</span>
-                      </button>
+                      (() => {
+                        const logoUrl = getTemplateLogoUrl(t);
+
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => selectTemplate(t)}
+                            className="flex w-full items-center gap-3 p-3 text-left text-sm hover:bg-white/[0.06] transition-colors"
+                          >
+                            {logoUrl && (
+                              <img src={logoUrl} alt={t.name} className="h-6 w-6 rounded-lg object-contain bg-white/10 p-0.5" />
+                            )}
+                            <span className="text-white/80">{t.name}</span>
+                            <span className="ml-auto text-xs text-white/30">{t.category_name}</span>
+                          </button>
+                        );
+                      })()
                     ))
                   )}
                 </div>

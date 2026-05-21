@@ -21,6 +21,14 @@ function isForeignKeyViolation(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'code' in error && (error as any).code === '23503';
 }
 
+function parseTemplateId(rawId: string): number | null {
+  const parsed = Number(rawId);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return null;
+  }
+  return parsed;
+}
+
 // GET /api/templates
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -93,6 +101,11 @@ router.post('/', async (req: Request, res: Response) => {
 // PUT /api/templates/:id
 router.put('/:id', async (req: Request, res: Response) => {
   try {
+    const templateId = parseTemplateId(req.params.id);
+    if (!templateId) {
+      return res.status(400).json({ error: 'Invalid template id' });
+    }
+
     const data = templateSchema.parse(req.body);
 
     if (!(await categoryExists(data.category_id))) {
@@ -114,7 +127,7 @@ router.put('/:id', async (req: Request, res: Response) => {
         data.default_currency,
         data.logo_url || null,
         data.website_url || null,
-        req.params.id,
+        templateId,
       ]
     );
 
@@ -127,7 +140,7 @@ router.put('/:id', async (req: Request, res: Response) => {
        FROM subscription_templates t
        JOIN categories c ON t.category_id = c.id
        WHERE t.id = $1`,
-      [req.params.id]
+      [templateId]
     );
 
     res.json(template.rows[0]);
@@ -146,9 +159,14 @@ router.put('/:id', async (req: Request, res: Response) => {
 // DELETE /api/templates/:id
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
+    const templateId = parseTemplateId(req.params.id);
+    if (!templateId) {
+      return res.status(400).json({ error: 'Invalid template id' });
+    }
+
     const result = await pool.query(
       'DELETE FROM subscription_templates WHERE id = $1 RETURNING *',
-      [req.params.id]
+      [templateId]
     );
 
     if (result.rows.length === 0) {
