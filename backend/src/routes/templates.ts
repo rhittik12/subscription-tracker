@@ -12,6 +12,15 @@ const templateSchema = z.object({
   website_url: z.string().optional().nullable(),
 });
 
+async function categoryExists(categoryId: number): Promise<boolean> {
+  const result = await pool.query('SELECT 1 FROM categories WHERE id = $1 LIMIT 1', [categoryId]);
+  return result.rows.length > 0;
+}
+
+function isForeignKeyViolation(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && 'code' in error && (error as any).code === '23503';
+}
+
 // GET /api/templates
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -42,6 +51,11 @@ router.get('/', async (req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const data = templateSchema.parse(req.body);
+
+    if (!(await categoryExists(data.category_id))) {
+      return res.status(400).json({ error: 'Invalid category_id' });
+    }
+
     const result = await pool.query(
       `INSERT INTO subscription_templates (name, category_id, default_currency, logo_url, website_url)
        VALUES ($1, $2, $3, $4, $5)
@@ -68,6 +82,9 @@ router.post('/', async (req: Request, res: Response) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
     }
+    if (isForeignKeyViolation(error)) {
+      return res.status(400).json({ error: 'Invalid category_id' });
+    }
     console.error('Error creating template:', error);
     res.status(500).json({ error: 'Failed to create template' });
   }
@@ -77,6 +94,11 @@ router.post('/', async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const data = templateSchema.parse(req.body);
+
+    if (!(await categoryExists(data.category_id))) {
+      return res.status(400).json({ error: 'Invalid category_id' });
+    }
+
     const result = await pool.query(
       `UPDATE subscription_templates
        SET name = $1,
@@ -112,6 +134,9 @@ router.put('/:id', async (req: Request, res: Response) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.errors });
+    }
+    if (isForeignKeyViolation(error)) {
+      return res.status(400).json({ error: 'Invalid category_id' });
     }
     console.error('Error updating template:', error);
     res.status(500).json({ error: 'Failed to update template' });
