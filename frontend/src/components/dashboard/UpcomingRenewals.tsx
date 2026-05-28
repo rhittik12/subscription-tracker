@@ -3,6 +3,7 @@
 import { Subscription } from '@/types';
 import { formatCurrency, formatDate, getDaysUntil } from '@/lib/utils';
 import { Clock } from 'lucide-react';
+import { resolveLogoUrl } from '@/lib/logo';
 
 interface UpcomingRenewalsProps {
   subscriptions: Subscription[];
@@ -43,9 +44,9 @@ export function UpcomingRenewals({ subscriptions, loading }: UpcomingRenewalsPro
                   className="glass-chip flex items-center justify-between rounded-2xl p-4 transition-all duration-300"
                 >
                   <div className="flex items-center gap-3">
-                    {sub.logo_url ? (
+                    {resolveLogoUrl(sub.logo_url) ? (
                       <img
-                        src={sub.logo_url}
+                        src={resolveLogoUrl(sub.logo_url) || undefined}
                         alt={sub.name}
                         className="h-10 w-10 rounded-xl object-contain bg-white/10 p-1.5"
                         loading="lazy"

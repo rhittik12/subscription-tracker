@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { formatCurrency, getDaysUntil } from '@/lib/utils';
 import { getSubscriptions } from '@/lib/api';
+import { resolveLogoUrl } from '@/lib/logo';
 
 const categoryOrder = [
   'Entertainment',
@@ -219,9 +220,9 @@ export function DashboardContent() {
                     >
                       <div className="relative z-10">
                         <div className="mb-4 flex items-start justify-between">
-                          {service.logo_url ? (
+                          {resolveLogoUrl(service.logo_url) ? (
                             <img
-                              src={service.logo_url}
+                              src={resolveLogoUrl(service.logo_url) || undefined}
                               alt={`${service.name} logo`}
                               className="h-9 w-9 rounded-lg bg-white/10 object-contain p-1.5"
                               loading="lazy"

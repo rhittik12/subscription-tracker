@@ -431,8 +431,8 @@ These are defined in [frontend/src/app/globals.css](frontend/src/app/globals.css
 
 ### Backend fails with port already in use
 
-If you see `EADDRINUSE: address already in use :::4000`, another backend process is already running.
-Stop the existing process or change `PORT` in your backend environment file.
+The backend dev script now clears any process already listening on `4000` before it starts.
+If you still see a port error, change `PORT` in [backend/.env](backend/.env) to a free port.
 
 ### Frontend fails with CSS syntax errors
 

@@ -4,6 +4,7 @@
   "description": "Personal Subscription Tracker API",
   "main": "dist/index.js",
   "scripts": {
+    "predev": "node scripts/free-port.cjs",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Subscription } from '@/types';
 import { formatCurrency, formatDate, getDaysUntil, getBillingCycleLabel } from '@/lib/utils';
+import { resolveLogoUrl } from '@/lib/logo';
 import {
   Pause,
   Play,
@@ -100,9 +101,9 @@ export function SubscriptionTable({
                     <tr key={sub.id} className="transition-colors duration-200 hover:bg-white/[0.03]">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          {sub.logo_url ? (
+                          {resolveLogoUrl(sub.logo_url) ? (
                             <img
-                              src={sub.logo_url}
+                              src={resolveLogoUrl(sub.logo_url) || undefined}
                               alt={sub.name}
                               className="h-8 w-8 rounded-xl object-contain bg-white/10 p-1"
                               loading="lazy"

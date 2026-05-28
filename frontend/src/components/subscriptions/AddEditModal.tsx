@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { X, Search } from 'lucide-react';
 import { Category, SubscriptionTemplate, Subscription, CURRENCIES, BILLING_CYCLES } from '@/types';
 import { getTemplates } from '@/lib/api';
+import { buildTemplateLogoProxyUrl, resolveLogoUrl } from '@/lib/logo';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -49,14 +50,23 @@ export function AddEditModal({
   const isEditing = !!subscription;
 
   function getTemplateLogoUrl(template: SubscriptionTemplate) {
-    if (template.logo_url) return template.logo_url;
+    const storedLogoUrl = resolveLogoUrl(template.logo_url);
+
+    if (storedLogoUrl && !storedLogoUrl.includes('clearbit.com')) {
+      return storedLogoUrl;
+    }
 
     if (template.website_url) {
       try {
-        return `https://logo.clearbit.com/${new URL(template.website_url).hostname}`;
+        const domain = new URL(template.website_url).hostname;
+        return buildTemplateLogoProxyUrl(domain);
       } catch {
         return null;
       }
+    }
+
+    if (storedLogoUrl) {
+      return buildTemplateLogoProxyUrl(storedLogoUrl.replace('https://logo.clearbit.com/', ''));
     }
 
     return null;

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Edit, MoreHorizontal, Trash2 } from 'lucide-react';
 import { SubscriptionTemplate } from '@/types';
 import { deleteTemplate, getTemplates } from '@/lib/api';
+import { resolveLogoUrl } from '@/lib/logo';
 
 interface TemplateLibraryProps {
   onEditTemplate: (template: SubscriptionTemplate) => void;
@@ -45,7 +46,9 @@ export function TemplateLibrary({ onEditTemplate }: TemplateLibraryProps) {
   }
 
   function getTemplateLogo(template: SubscriptionTemplate) {
-    if (template.logo_url) return template.logo_url;
+    const storedLogoUrl = resolveLogoUrl(template.logo_url);
+
+    if (storedLogoUrl) return storedLogoUrl;
 
     if (template.website_url) {
       try {

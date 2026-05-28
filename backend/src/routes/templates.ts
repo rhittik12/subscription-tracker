@@ -55,6 +55,36 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/templates/logo/proxy
+router.get('/logo/proxy', async (req: Request, res: Response) => {
+  try {
+    const domain = req.query.domain as string;
+    if (!domain) {
+      return res.status(400).json({ error: 'Domain parameter required' });
+    }
+
+    const logoUrl = `https://logo.clearbit.com/${domain}`;
+
+    const response = await fetch(logoUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      },
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: 'Logo not found' });
+    }
+
+    const buffer = await response.arrayBuffer();
+    res.set('Content-Type', response.headers.get('content-type') || 'image/png');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.send(Buffer.from(buffer));
+  } catch (error) {
+    console.error('Error fetching logo:', error);
+    res.status(500).json({ error: 'Failed to fetch logo' });
+  }
+});
+
 // POST /api/templates
 router.post('/', async (req: Request, res: Response) => {
   try {
