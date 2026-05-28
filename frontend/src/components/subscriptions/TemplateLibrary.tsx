@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Edit, MoreHorizontal, Trash2 } from 'lucide-react';
 import { SubscriptionTemplate } from '@/types';
 import { deleteTemplate, getTemplates } from '@/lib/api';
-import { resolveLogoUrl } from '@/lib/logo';
+import { buildTemplateLogoProxyUrl, resolveLogoUrl } from '@/lib/logo';
 
 interface TemplateLibraryProps {
   onEditTemplate: (template: SubscriptionTemplate) => void;
@@ -52,7 +52,7 @@ export function TemplateLibrary({ onEditTemplate }: TemplateLibraryProps) {
 
     if (template.website_url) {
       try {
-        return `https://logo.clearbit.com/${new URL(template.website_url).hostname}`;
+        return buildTemplateLogoProxyUrl(new URL(template.website_url).hostname);
       } catch {
         return null;
       }

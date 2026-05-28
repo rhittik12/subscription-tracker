@@ -29,6 +29,81 @@ function parseTemplateId(rawId: string): number | null {
   return parsed;
 }
 
+function normalizeDomain(rawDomain: string): string | null {
+  const candidate = rawDomain.trim().toLowerCase();
+  if (!candidate || candidate.length > 255) {
+    return null;
+  }
+
+  try {
+    const url = candidate.includes('://')
+      ? new URL(candidate)
+      : new URL(`https://${candidate}`);
+    const hostname = url.hostname.toLowerCase();
+
+    if (!hostname || !hostname.includes('.')) {
+      return null;
+    }
+
+    if (!/^[a-z0-9.-]+$/.test(hostname)) {
+      return null;
+    }
+
+    return hostname;
+  } catch {
+    return null;
+  }
+}
+
+function fallbackSvgForDomain(domain: string): string {
+  const initial = domain.charAt(0).toUpperCase() || '?';
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="${domain}">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="20" fill="url(#g)" />
+  <text x="64" y="74" text-anchor="middle" font-family="Arial, sans-serif" font-size="56" font-weight="700" fill="#e2e8f0">${initial}</text>
+</svg>`;
+}
+
+async function fetchLogoFromProviders(domain: string): Promise<{ buffer: Buffer; contentType: string } | null> {
+  const providers = [
+    `https://logo.clearbit.com/${domain}`,
+    `https://icon.horse/icon/${domain}`,
+    `https://www.google.com/s2/favicons?domain=${domain}&sz=128`,
+  ];
+
+  for (const providerUrl of providers) {
+    try {
+      const response = await fetch(providerUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        },
+      });
+
+      if (!response.ok) {
+        continue;
+      }
+
+      const contentType = response.headers.get('content-type') || 'image/png';
+      if (!contentType.startsWith('image/')) {
+        continue;
+      }
+
+      const buffer = Buffer.from(await response.arrayBuffer());
+      return { buffer, contentType };
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+}
+
 // GET /api/templates
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -58,27 +133,27 @@ router.get('/', async (req: Request, res: Response) => {
 // GET /api/templates/logo/proxy
 router.get('/logo/proxy', async (req: Request, res: Response) => {
   try {
-    const domain = req.query.domain as string;
-    if (!domain) {
+    const domainParam = req.query.domain as string;
+    if (!domainParam) {
       return res.status(400).json({ error: 'Domain parameter required' });
     }
 
-    const logoUrl = `https://logo.clearbit.com/${domain}`;
-
-    const response = await fetch(logoUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-      },
-    });
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: 'Logo not found' });
+    const domain = normalizeDomain(domainParam);
+    if (!domain) {
+      return res.status(400).json({ error: 'Invalid domain parameter' });
     }
 
-    const buffer = await response.arrayBuffer();
-    res.set('Content-Type', response.headers.get('content-type') || 'image/png');
+    const result = await fetchLogoFromProviders(domain);
+    if (result) {
+      res.set('Content-Type', result.contentType);
+      res.set('Cache-Control', 'public, max-age=86400');
+      return res.send(result.buffer);
+    }
+
+    // Always return an image fallback so logo rendering never fails hard.
+    res.set('Content-Type', 'image/svg+xml; charset=utf-8');
     res.set('Cache-Control', 'public, max-age=86400');
-    res.send(Buffer.from(buffer));
+    return res.send(fallbackSvgForDomain(domain));
   } catch (error) {
     console.error('Error fetching logo:', error);
     res.status(500).json({ error: 'Failed to fetch logo' });
