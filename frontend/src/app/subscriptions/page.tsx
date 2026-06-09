@@ -131,13 +131,13 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-3xl font-extrabold tracking-tight text-white/95 lg:text-4xl">
+          <h1 className="font-headline text-3xl font-extrabold tracking-tight text-black lg:text-4xl">
             Subscriptions
           </h1>
-          <p className="mt-2 text-sm font-medium text-white/40">
+          <p className="mt-2 text-sm font-medium text-black">
             Manage all your subscriptions ({subscriptions.length} total)
           </p>
         </div>
@@ -175,12 +175,12 @@ export default function SubscriptionsPage() {
                   <Trash2 size={18} />
                 </div>
                 <div>
-                  <h2 className="font-headline text-lg font-bold text-white/90">Delete subscription?</h2>
-                  <p className="mt-1 text-sm text-white/40">{pendingDelete.name}</p>
+                  <h2 className="font-headline text-lg font-bold text-black">Delete subscription?</h2>
+                  <p className="mt-1 text-sm text-black">{pendingDelete.name}</p>
                 </div>
               </div>
 
-              <p className="text-sm text-white/55">
+              <p className="text-sm text-black">
                 This will remove the subscription from your tracker.
               </p>
               {deleteError && (
@@ -197,7 +197,7 @@ export default function SubscriptionsPage() {
                     setPendingDelete(null);
                   }}
                   disabled={deletingId === pendingDelete.id}
-                  className="glass-chip rounded-xl px-4 py-2.5 text-sm font-semibold text-white/55 transition-colors hover:text-white/80 disabled:opacity-50"
+                  className="glass-chip rounded-xl px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:text-black disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -205,7 +205,7 @@ export default function SubscriptionsPage() {
                   type="button"
                   onClick={confirmDelete}
                   disabled={deletingId === pendingDelete.id}
-                  className="rounded-xl bg-rose-500/90 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-rose-500 disabled:opacity-50"
+                  className="rounded-xl bg-rose-500/90 px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-rose-500 disabled:opacity-50"
                 >
                   {deletingId === pendingDelete.id ? 'Deleting...' : 'Delete'}
                 </button>

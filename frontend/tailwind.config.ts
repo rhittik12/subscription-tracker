@@ -16,8 +16,8 @@ const config: Config = {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: '#000080',
+          foreground: '#bfc2ff',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -39,25 +39,58 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        /* Brutalist palette additions */
+        'surface': '#131313',
+        'surface-dim': '#131313',
+        'surface-bright': '#3a3939',
+        'surface-container-lowest': '#0e0e0e',
+        'surface-container-low': '#1c1b1b',
+        'surface-container': '#201f1f',
+        'surface-container-high': '#2a2a2a',
+        'surface-container-highest': '#353534',
+        'on-surface': '#e5e2e1',
+        'on-surface-variant': '#c6c5d5',
+        'inverse-surface': '#e5e2e1',
+        'inverse-on-surface': '#313030',
+        'outline': '#908f9e',
+        'outline-variant': '#464653',
+        'surface-tint': '#bfc2ff',
+        'primary-container': '#000080',
       },
       borderRadius: {
-        '2xl': '1rem',
-        '3xl': '1.5rem',
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        DEFAULT: '0px',
+        '2xl': '0px',
+        '3xl': '0px',
+        lg: '0px',
+        md: '0px',
+        sm: '0px',
+      },
+      borderWidth: {
+        DEFAULT: '3px',
+      },
+      spacing: {
+        'grid-margin': '2rem',
+        'gutter': '1.5rem',
+        'shadow-offset': '8px'
+      },
+      fontFamily: {
+        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        'label-bold': ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        body: ['JetBrains Mono', 'ui-monospace', 'monospace']
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '1.1', fontWeight: '700' }],
+        'headline-lg': ['32px', { lineHeight: '1.2', fontWeight: '600' }]
       },
       boxShadow: {
         'glass': '0 8px 32px rgba(0, 0, 0, 0.3)',
         'glass-lg': '0 12px 40px rgba(0, 0, 0, 0.35)',
-        'glass-xl': '0 24px 80px rgba(0, 0, 0, 0.5)',
-        'glow-indigo': '0 0 60px rgba(99, 102, 241, 0.15)',
-        'glow-violet': '0 0 60px rgba(139, 92, 246, 0.12)',
-        'glow-blue': '0 0 60px rgba(59, 130, 246, 0.12)',
+        'brutalist': '8px 8px 0 0 #000000',
+        'brutalist-sm': '4px 4px 0 0 #000000'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'glass-reflection': 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%)',
+        'glass-reflection': 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%)',
       },
     },
   },

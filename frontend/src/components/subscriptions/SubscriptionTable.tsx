@@ -24,12 +24,12 @@ const TABLE_HEADERS = [
   'Actions',
 ] as const;
 
-const HEADER_CLASSNAME = 'px-4 py-4 text-left text-[11px] font-bold uppercase tracking-[0.14em] text-white/25';
+const HEADER_CLASSNAME = 'border-r-[3px] border-black px-5 py-4 text-left text-[11px] font-black uppercase tracking-[0.14em] text-black last:border-r-0';
 
 function getStatusBadgeClass(status: SubscriptionStatus): string {
-  if (status === 'active') return 'bg-emerald-500/15 text-emerald-400';
-  if (status === 'paused') return 'bg-amber-500/15 text-amber-400';
-  return 'bg-rose-500/15 text-rose-400';
+  if (status === 'active') return 'border-[3px] border-black bg-[#d9f0c6] text-black';
+  if (status === 'paused') return 'border-[3px] border-black bg-[#FDE68A] text-black';
+  return 'border-[3px] border-black bg-[#FCA5A5] text-black';
 }
 
 function getStatusLabel(status: SubscriptionStatus): string {
@@ -50,7 +50,7 @@ interface SubscriptionTableProps {
 
 export function SubscriptionTable({
   subscriptions,
-  loading = false,
+  loading,
   onEdit,
   onDelete,
   onToggleStatus,
@@ -72,14 +72,14 @@ export function SubscriptionTable({
     <div className="space-y-6">
       {loading ? (
         <div className="glass-card rounded-2xl px-6 py-10 text-center" role="status" aria-live="polite">
-          <p className="text-sm font-medium text-white/40">Loading subscriptions...</p>
+          <p className="text-sm font-medium text-black">Loading subscriptions...</p>
         </div>
       ) : subscriptions.length > 0 ? (
-        <div className="glass-card glass-reflection rounded-2xl overflow-hidden">
+        <div className="border-[3px] border-black bg-white brutalist-shadow overflow-hidden">
           <div className="overflow-x-auto relative z-10">
-            <table className="w-full" aria-label="Subscriptions table">
-              <thead>
-                <tr className="border-b border-white/[0.06]">
+            <table className="w-full border-collapse" aria-label="Subscriptions table">
+              <thead className="bg-[#89ACE7]">
+                <tr className="border-b-[3px] border-black">
                   {TABLE_HEADERS.map((header) => (
                     <th
                       key={header}
@@ -90,7 +90,7 @@ export function SubscriptionTable({
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="divide-y-[3px] divide-black">
                 {subscriptions.map((sub) => {
                   const daysUntil = getDaysUntil(sub.next_renewal_date);
                   const amount = Number(sub.amount);
@@ -98,8 +98,8 @@ export function SubscriptionTable({
                   const nextStatus: SubscriptionStatus = sub.status === 'active' ? 'paused' : 'active';
 
                   return (
-                    <tr key={sub.id} className="transition-colors duration-200 hover:bg-white/[0.03]">
-                      <td className="px-4 py-3">
+                    <tr key={sub.id} className="bg-white transition-colors duration-200 hover:bg-[#d9f0c6]">
+                      <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
                         <div className="flex items-center gap-3">
                           {resolveLogoUrl(sub.logo_url) ? (
                             <img
@@ -111,16 +111,16 @@ export function SubscriptionTable({
                             />
                           ) : (
                             <div
-                              className="flex h-8 w-8 items-center justify-center rounded-xl text-xs font-bold text-white ring-1 ring-white/10"
+                              className="flex h-8 w-8 items-center justify-center rounded-xl text-xs font-bold text-black ring-1 ring-black/10"
                               style={{ backgroundColor: `${sub.category_color}30` }}
                             >
                               {getInitial(sub.name)}
                             </div>
                           )}
-                          <span className="text-sm font-semibold text-white/85">{sub.name}</span>
+                          <span className="text-sm font-semibold text-black">{sub.name}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
                         <span
                           className="rounded-full px-2.5 py-1 text-xs font-medium"
                           style={{
@@ -131,31 +131,31 @@ export function SubscriptionTable({
                           {sub.category_name}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-headline text-sm font-bold text-white/85">
+                      <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
                         {formatCurrency(Number.isFinite(amount) ? amount : 0, sub.currency)}
                       </td>
-                      <td className="px-4 py-3 text-sm text-white/40">
+                      <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
                         {getBillingCycleLabel(sub.billing_cycle)}
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm text-white/70">{formatDate(sub.next_renewal_date)}</div>
+                      <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
+                        <div className="text-sm text-black">{formatDate(sub.next_renewal_date)}</div>
                         {sub.status === 'active' && (
-                          <div className={`mt-0.5 text-xs ${daysUntil <= 7 ? 'text-amber-400' : 'text-white/30'}`}>
+                          <div className={`mt-0.5 text-xs ${daysUntil <= 7 ? 'text-black' : 'text-black'}`}>
                             {daysUntil <= 0 ? 'Due today' : `in ${daysUntil} day${daysUntil !== 1 ? 's' : ''}`}
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3">
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getStatusBadgeClass(sub.status)}`}>
-                          {getStatusLabel(sub.status)}
+                      <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
+                        
+                          {getStatusLabel(sub.status)}<span className={`text-xs font-black uppercase px-2.5 py-1 ${getStatusBadgeClass(sub.status)}`}>
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
                         <div className="relative inline-block">
                           <button
                             type="button"
                             onClick={() => setOpenMenu(openMenu === sub.id ? null : sub.id)}
-                            className="rounded-xl p-1.5 text-white/30 transition-all duration-200 hover:bg-white/[0.06] hover:text-white/60"
+                            className="border-[3px] border-black bg-white p-1.5 text-black transition-all duration-200 hover:bg-[#89ACE7]"
                             aria-label={`Open actions for ${sub.name}`}
                             aria-haspopup="menu"
                             aria-expanded={isMenuOpen}
@@ -173,7 +173,7 @@ export function SubscriptionTable({
                                 <button
                                   type="button"
                                   onClick={() => { onEdit(sub); setOpenMenu(null); }}
-                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white/90 transition-colors"
+                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-black hover:bg-white/[0.06] hover:text-white/90 transition-colors"
                                   role="menuitem"
                                 >
                                   <Edit size={14} /> Edit
@@ -181,7 +181,7 @@ export function SubscriptionTable({
                                 <button
                                   type="button"
                                   onClick={() => { onToggleStatus(sub.id, nextStatus); setOpenMenu(null); }}
-                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white/90 transition-colors"
+                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-black hover:bg-white/[0.06] hover:text-white/90 transition-colors"
                                   role="menuitem"
                                 >
                                   {sub.status === 'active' ? (
@@ -193,7 +193,7 @@ export function SubscriptionTable({
                                 <button
                                   type="button"
                                   onClick={() => { onDelete(sub.id); setOpenMenu(null); }}
-                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
+                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-black hover:bg-rose-500/10 transition-colors"
                                   role="menuitem"
                                 >
                                   <Trash2 size={14} /> Delete
@@ -212,8 +212,8 @@ export function SubscriptionTable({
         </div>
       ) : (
         <div className="glass-card rounded-2xl px-6 py-10 text-center">
-          <p className="text-sm font-semibold text-white/80">No subscriptions found.</p>
-          <p className="mt-2 text-sm text-white/35">Add a subscription to get started.</p>
+          <p className="text-sm font-semibold text-black">No subscriptions found.</p>
+          <p className="mt-2 text-sm text-black">Add a subscription to get started.</p>
         </div>
       )}
     </div>

@@ -15,8 +15,8 @@ export function UpcomingRenewals({ subscriptions, loading }: UpcomingRenewalsPro
     <div className="glass-card glass-reflection rounded-2xl p-8 lg:col-span-4">
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-headline text-xl font-bold text-white/85">Upcoming Bills</h3>
-          <span className="text-sm text-white/30">Next 30 days</span>
+          <h3 className="font-headline text-xl font-bold text-black">Upcoming Bills</h3>
+          <span className="text-sm text-black">Next 30 days</span>
         </div>
 
         {loading ? (
@@ -26,7 +26,7 @@ export function UpcomingRenewals({ subscriptions, loading }: UpcomingRenewalsPro
             ))}
           </div>
         ) : subscriptions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-white/30">
+          <div className="flex flex-col items-center justify-center py-8 text-black">
             <Clock size={32} className="mb-2" />
             <p>No upcoming renewals</p>
           </div>
@@ -34,9 +34,9 @@ export function UpcomingRenewals({ subscriptions, loading }: UpcomingRenewalsPro
           <div className="space-y-3">
             {subscriptions.map((sub) => {
               const daysUntil = getDaysUntil(sub.next_renewal_date);
-              let badgeColor = 'bg-emerald-500/15 text-emerald-400';
-              if (daysUntil <= 3) badgeColor = 'bg-rose-500/15 text-rose-400';
-              else if (daysUntil <= 7) badgeColor = 'bg-amber-500/15 text-amber-400';
+              let badgeColor = 'bg-emerald-500/15 text-black';
+              if (daysUntil <= 3) badgeColor = 'bg-rose-500/15 text-black';
+              else if (daysUntil <= 7) badgeColor = 'bg-amber-500/15 text-black';
 
               return (
                 <div
@@ -54,21 +54,21 @@ export function UpcomingRenewals({ subscriptions, loading }: UpcomingRenewalsPro
                       />
                     ) : (
                       <div
-                        className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-white ring-1 ring-white/10"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-black ring-1 ring-white/10"
                         style={{ backgroundColor: `${sub.category_color}30` }}
                       >
                         {sub.name.charAt(0)}
                       </div>
                     )}
                     <div>
-                      <p className="text-sm font-semibold text-white/85">{sub.name}</p>
-                      <p className="text-xs text-white/30">
+                      <p className="text-sm font-semibold text-black">{sub.name}</p>
+                      <p className="text-xs text-black">
                         {formatDate(sub.next_renewal_date)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-headline text-sm font-bold text-white/80">
+                    <span className="font-headline text-sm font-bold text-black">
                       {formatCurrency(parseFloat(sub.amount), sub.currency)}
                     </span>
                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${badgeColor}`}>

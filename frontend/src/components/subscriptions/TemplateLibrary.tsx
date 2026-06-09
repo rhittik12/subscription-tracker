@@ -69,8 +69,8 @@ export function TemplateLibrary({ onEditTemplate }: TemplateLibraryProps) {
     <section className="glass-card glass-reflection rounded-2xl p-5">
       <div className="relative z-10">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-headline text-lg font-bold text-white/85">App Templates</h2>
-          <p className="text-xs font-semibold text-white/25">{templates.length} Apps</p>
+          <h2 className="font-headline text-lg font-bold text-black">App Templates</h2>
+          <p className="text-xs font-semibold text-black/25">{templates.length} Apps</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
@@ -87,16 +87,16 @@ export function TemplateLibrary({ onEditTemplate }: TemplateLibraryProps) {
                     className="h-7 w-7 rounded-lg bg-white/10 object-contain p-1"
                   />
                 ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-[10px] font-bold text-white/70">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-[10px] font-bold text-black">
                     {getInitial(template.name)}
                   </div>
                 )}
-                <span className="truncate text-xs font-semibold text-white/75">{template.name}</span>
+                <span className="truncate text-xs font-semibold text-black">{template.name}</span>
               </div>
 
               <button
                 type="button"
-                className="rounded-lg p-1 text-white/25 hover:bg-white/[0.06] hover:text-white/50 transition-all duration-200"
+                className="rounded-lg p-1 text-black hover:bg-white/[0.06] hover:text-black/50 transition-all duration-200"
                 onClick={() => setOpenMenuId(openMenuId === template.id ? null : template.id)}
               >
                 <MoreHorizontal size={14} />
@@ -108,14 +108,14 @@ export function TemplateLibrary({ onEditTemplate }: TemplateLibraryProps) {
                   <div className="absolute right-1 top-15 z-20 w-28 rounded-xl glass-heavy py-1">
                     <button
                       type="button"
-                      className="flex w-full items-center gap-1.5 px-2.5 py-2 text-xs text-white/70 hover:bg-white/[0.06] transition-colors"
+                      className="flex w-full items-center gap-1.5 px-2.5 py-2 text-xs text-black hover:bg-white/[0.06] transition-colors"
                       onClick={() => handleEdit(template.id)}
                     >
                       <Edit size={12} /> Edit
                     </button>
                     <button
                       type="button"
-                      className="flex w-full items-center gap-1.5 px-2.5 py-2 text-xs text-rose-400 hover:bg-rose-500/10 transition-colors"
+                      className="flex w-full items-center gap-1.5 px-2.5 py-2 text-xs text-black hover:bg-rose-500/10 transition-colors"
                       onClick={() => handleDelete(template.id)}
                     >
                       <Trash2 size={12} /> Delete
