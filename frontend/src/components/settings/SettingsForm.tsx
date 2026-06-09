@@ -89,8 +89,8 @@ export function SettingsForm() {
     <div className="space-y-6 max-w-2xl">
       {message && (
         <div className={`p-4 rounded-2xl text-sm font-medium ${message.type === 'success'
-          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-          : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+          ? 'bg-emerald-100 text-emerald-900 border border-emerald-400'
+          : 'bg-rose-100 text-rose-900 border border-rose-400'
           }`}>
           {message.text}
         </div>

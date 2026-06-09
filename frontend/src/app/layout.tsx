@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -36,7 +36,7 @@ export default function RootLayout({
 
         <div className="relative z-10 min-h-screen">
           <Sidebar />
-          <main className="min-h-screen" style={{ marginLeft: 280 }}>
+          <main className="min-h-screen lg:ml-[280px]">
             <BrutalistClientWrapper>
               <Navbar />
               <div className="pt-6 lg:pt-8 px-gutter">{children}</div>

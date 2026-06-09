@@ -107,7 +107,7 @@ export function Navbar() {
                 'block rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-300',
                 pathname === link.href
                   ? 'glass-chip text-white/85'
-                  : 'text-white/50 hover:bg-white/5 hover:text-black'
+                  : 'text-black/70 hover:bg-white/30 hover:text-black'
               )}
               onClick={() => setMobileMenuOpen(false)}
             >

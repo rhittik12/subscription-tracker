@@ -146,8 +146,8 @@ export function SubscriptionTable({
                         )}
                       </td>
                       <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
-                        
-                          {getStatusLabel(sub.status)}<span className={`text-xs font-black uppercase px-2.5 py-1 ${getStatusBadgeClass(sub.status)}`}>
+                        <span className={`text-xs font-black uppercase px-2.5 py-1 ${getStatusBadgeClass(sub.status)}`}>
+                          {getStatusLabel(sub.status)}
                         </span>
                       </td>
                       <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">

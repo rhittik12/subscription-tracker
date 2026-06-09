@@ -313,7 +313,7 @@ export function AddEditModal({
           {/* Amount + Currency */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-black">Amount *</label>
+              <label className="mb-1.5 block text-sm font-semibold text-rose-400">Amount *</label>
               <input
                 type="number"
                 step="0.01"
