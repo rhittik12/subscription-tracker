@@ -88,20 +88,19 @@ export function SettingsForm() {
   return (
     <div className="space-y-6 max-w-2xl">
       {message && (
-        <div className={`p-4 rounded-2xl text-sm font-medium ${
-          message.type === 'success'
-            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-            : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-        }`}>
+        <div className={`p-4 rounded-2xl text-sm font-medium ${message.type === 'success'
+          ? 'bg-emerald-100 text-emerald-900 border border-emerald-400'
+          : 'bg-rose-100 text-rose-900 border border-rose-400'
+          }`}>
           {message.text}
         </div>
       )}
 
       {/* Currency */}
-      <div className="glass-card glass-reflection rounded-2xl p-6">
+      <div className="border-[3px] border-black bg-white p-6 brutalist-shadow">
         <div className="relative z-10">
-          <h3 className="font-semibold text-white/85 mb-4">Display Currency</h3>
-          <p className="text-sm text-white/35 mb-3">
+          <h3 className="font-semibold text-black mb-4">Display Currency</h3>
+          <p className="text-sm text-black mb-3">
             All spending totals will be converted to this currency
           </p>
           <select
@@ -110,21 +109,23 @@ export function SettingsForm() {
             className="glass-input w-full sm:w-auto rounded-xl px-3 py-2.5 text-sm"
           >
             {CURRENCIES.map((c) => (
-              <option key={c.code} value={c.code} className="bg-[#0f1223] text-white">{c.symbol} {c.code} - {c.name}</option>
+              <option key={c.code} value={c.code} className="bg-white text-black">
+                {c.symbol} {c.code} - {c.name}
+              </option>
             ))}
           </select>
         </div>
       </div>
 
       {/* Email Notifications */}
-      <div className="glass-card glass-reflection rounded-2xl p-6">
+      <div className="border-[3px] border-black bg-white p-6 brutalist-shadow">
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-white/15 ring-1 ring-white/20">
-                <Mail size={18} className="text-white/85" />
+              <div className="border-[3px] border-black bg-white p-2.5">
+                <Mail size={18} className="text-black" />
               </div>
-              <h3 className="font-semibold text-white/85">Email Notifications</h3>
+              <h3 className="font-semibold text-black">Email Notifications</h3>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -146,7 +147,7 @@ export function SettingsForm() {
           <button
             onClick={() => handleTestNotification('email')}
             disabled={testingEmail || !email}
-            className="mt-3 inline-flex items-center gap-2 text-sm text-white/85 hover:text-white transition-colors disabled:opacity-30 disabled:hover:text-white/85"
+            className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-black hover:text-black transition-colors disabled:opacity-30 disabled:hover:text-black"
           >
             <Send size={14} />
             {testingEmail ? 'Sending...' : 'Send Test Email'}
@@ -155,14 +156,14 @@ export function SettingsForm() {
       </div>
 
       {/* WhatsApp Notifications */}
-      <div className="glass-card glass-reflection rounded-2xl p-6">
+      <div className="border-[3px] border-black bg-white p-6 brutalist-shadow">
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-emerald-500/15 ring-1 ring-emerald-500/20">
-                <MessageSquare size={18} className="text-emerald-400" />
+              <div className="border-[3px] border-black bg-white p-2.5">
+                <MessageSquare size={18} className="text-black" />
               </div>
-              <h3 className="font-semibold text-white/85">WhatsApp Notifications</h3>
+              <h3 className="font-semibold text-black">WhatsApp Notifications</h3>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -181,11 +182,11 @@ export function SettingsForm() {
             placeholder="+91 9876543210"
             className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
           />
-          <p className="text-xs text-white/25 mt-1.5">Include country code (e.g. +91)</p>
+          <p className="text-xs text-black mt-1.5">Include country code (e.g. +91)</p>
           <button
             onClick={() => handleTestNotification('whatsapp')}
             disabled={testingWhatsApp || !whatsappNumber}
-            className="mt-3 inline-flex items-center gap-2 text-sm text-white/85 hover:text-white transition-colors disabled:opacity-30 disabled:hover:text-white/85"
+            className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-black hover:text-black transition-colors disabled:opacity-30 disabled:hover:text-black"
           >
             <Send size={14} />
             {testingWhatsApp ? 'Sending...' : 'Send Test WhatsApp'}
@@ -194,10 +195,10 @@ export function SettingsForm() {
       </div>
 
       {/* Reminder Days */}
-      <div className="glass-card glass-reflection rounded-2xl p-6">
+      <div className="border-[3px] border-black bg-white p-6 brutalist-shadow">
         <div className="relative z-10">
-          <h3 className="font-semibold text-white/85 mb-4">Reminder Timing</h3>
-          <p className="text-sm text-white/35 mb-3">
+          <h3 className="font-semibold text-black mb-4">Reminder Timing</h3>
+          <p className="text-sm text-black mb-3">
             How many days before renewal should you be notified?
           </p>
           <select
@@ -205,12 +206,12 @@ export function SettingsForm() {
             onChange={(e) => setReminderDays(Number(e.target.value))}
             className="glass-input w-full sm:w-auto rounded-xl px-3 py-2.5 text-sm"
           >
-            <option value={1} className="bg-[#0f1223] text-white">1 day before</option>
-            <option value={3} className="bg-[#0f1223] text-white">3 days before</option>
-            <option value={5} className="bg-[#0f1223] text-white">5 days before</option>
-            <option value={7} className="bg-[#0f1223] text-white">7 days before</option>
-            <option value={14} className="bg-[#0f1223] text-white">14 days before</option>
-            <option value={30} className="bg-[#0f1223] text-white">30 days before</option>
+            <option value={1} className="bg-white text-black">1 day before</option>
+            <option value={3} className="bg-white text-black">3 days before</option>
+            <option value={5} className="bg-white text-black">5 days before</option>
+            <option value={7} className="bg-white text-black">7 days before</option>
+            <option value={14} className="bg-white text-black">14 days before</option>
+            <option value={30} className="bg-white text-black">30 days before</option>
           </select>
         </div>
       </div>
@@ -220,7 +221,7 @@ export function SettingsForm() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="glass-btn inline-flex items-center gap-2 rounded-2xl px-6 py-2.5 text-sm font-semibold disabled:opacity-50"
+          className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-black hover:text-black transition-colors disabled:opacity-30 disabled:hover:text-black"
         >
           <Save size={18} />
           {saving ? 'Saving...' : 'Save Settings'}

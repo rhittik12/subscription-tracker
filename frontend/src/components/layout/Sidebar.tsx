@@ -20,15 +20,15 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 flex-col px-4 py-8 z-50 bg-gradient-to-b from-white/[0.04] to-white/[0.01] border-r border-white/[0.06] backdrop-blur-2xl">
+    <aside data-sidebar className="hidden lg:flex fixed left-0 top-0 h-screen w-[280px] flex-col px-4 py-8 z-50">
       {/* Inner light reflection */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none rounded-none" />
 
       <div className="relative z-10 px-4 pb-8">
-        <h1 className="font-headline text-lg font-extrabold tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+        <h1 className="font-headline text-lg font-extrabold tracking-tight text-black">
           subscription tracker
         </h1>
-        <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/25">
+        <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-black">
           Wealth Management
         </p>
       </div>
@@ -41,14 +41,14 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'group relative flex items-center gap-3 px-4 py-3 text-sm font-semibold tracking-tight transition-all duration-300 rounded-xl',
+                'group relative flex items-center gap-3 px-4 py-3 text-sm font-semibold tracking-tight transition-all duration-300',
                 isActive
-                  ? 'text-white/85 bg-white/[0.06]'
-                  : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
+                  ? 'text-black bg-[#89ACE7] border-r-[6px] border-black translate-x-1 brutalist-shadow-sm'
+                  : 'text-black/80 hover:text-black hover:bg-white/30'
               )}
             >
               {isActive && (
-                <div className="absolute left-0 top-2 h-8 w-1 rounded-full bg-white/85 shadow-[0_0_12px_rgba(255,255,255,0.45)]" />
+                <div className="absolute left-0 top-2 h-8 w-1 bg-black" />
               )}
               <item.icon size={18} />
               {item.label}
@@ -57,14 +57,14 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="relative z-10 mt-auto glass-chip rounded-2xl p-4">
+      <div className="relative z-10 mt-auto p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-white/30 to-white/10 text-white/80 ring-1 ring-white/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-white/30 to-white/10 text-black ring-1 ring-white/10">
             <CircleUserRound size={20} />
           </div>
           <div>
-            <p className="text-sm font-bold text-white/80">Workspace User</p>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/30">Premium</p>
+            <p className="text-sm font-bold text-black">Workspace User</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-black">Premium</p>
           </div>
         </div>
       </div>

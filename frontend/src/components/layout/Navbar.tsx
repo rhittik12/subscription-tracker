@@ -60,7 +60,7 @@ export function Navbar() {
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-1 items-center gap-3">
           <button
-            className="lg:hidden rounded-xl p-2 text-white/50 transition-colors hover:bg-white/10 hover:text-white/80"
+            className="lg:hidden rounded-xl p-2 text-black transition-colors hover:bg-white/10 hover:text-white/80"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -68,18 +68,18 @@ export function Navbar() {
 
           {isSearchableRoute ? (
             <div className="group relative w-full max-w-xl">
-            <Search
-              size={16}
-              className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-white/30 transition-colors group-focus-within:text-white/75"
-            />
-            <input
-              type="text"
+              <Search
+                size={18}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black"
+              />
+              <input
+                type="text"
                 value={searchValue}
                 onChange={(event) => setSearchValue(event.target.value)}
                 placeholder={searchPlaceholder}
-              className="w-full border-0 border-b border-white/10 bg-transparent pb-2 pl-7 text-sm text-white/90 placeholder:text-white/25 focus:border-white/50 focus:outline-none focus:ring-0"
-              aria-label="Search"
-            />
+                className="w-full border-[3px] border-black bg-white px-4 py-3 pl-11 text-sm font-bold text-black placeholder:text-black/60 outline-none brutalist-shadow focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
+                aria-label="Search"
+              />
             </div>
           ) : (
             <div className="w-full max-w-xl" />
@@ -87,10 +87,10 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button className="glass-chip rounded-xl p-2.5 text-white/40 transition-all duration-300 hover:text-white/80">
+          <button className="glass-chip rounded-xl p-2.5 text-black transition-all duration-300 hover:text-black">
             <Bell size={18} />
           </button>
-          <button className="glass-chip rounded-xl p-2.5 text-white/40 transition-all duration-300 hover:text-white/80">
+          <button className="glass-chip rounded-xl p-2.5 text-black transition-all duration-300 hover:text-black">
             <CircleHelp size={18} />
           </button>
           <div className="h-9 w-9 rounded-full bg-gradient-to-br from-white/80 to-white/40 shadow-[0_0_20px_rgba(255,255,255,0.2)]" />
@@ -107,7 +107,7 @@ export function Navbar() {
                 'block rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-300',
                 pathname === link.href
                   ? 'glass-chip text-white/85'
-                  : 'text-white/50 hover:bg-white/5 hover:text-white/80'
+                  : 'text-black/70 hover:bg-white/30 hover:text-black'
               )}
               onClick={() => setMobileMenuOpen(false)}
             >

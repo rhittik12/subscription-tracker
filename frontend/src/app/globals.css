@@ -31,14 +31,10 @@
   }
 
   body {
-    @apply bg-[#050816] text-white antialiased;
+    @apply bg-white text-black antialiased;
     min-height: 100vh;
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-    background:
-      radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 28%),
-      radial-gradient(circle at 80% 15%, rgba(139, 92, 246, 0.12), transparent 22%),
-      radial-gradient(circle at 50% 100%, rgba(59, 130, 246, 0.08), transparent 24%),
-      linear-gradient(180deg, #08101f 0%, #050816 60%, #040712 100%);
+    background: #ffffff;
   }
 
   * {
@@ -106,3 +102,65 @@
     text-wrap: balance;
   }
 }
+
+/* Palette variables tuned to the screenshot */
+:root{
+  --card-bg: #89ACE7; /* light periwinkle cards */
+  --card-text: #000000; /* black text on cards */
+  --sidebar-bg: #ffffff; /* pastel green sidebar */
+  --primary-container: #A7C8FF; /* button/container tint */
+  --primary: #7867f9;
+  --chip-bg: rgba(255,255,255,0.06);
+  --border-color: #000000;
+  --brutalist-border: 3px;
+  --brutalist-shadow-offset: 8px;
+}
+
+/* Hard offset shadows */
+.brutalist-shadow { box-shadow: 8px 8px 0 0 var(--border-color); transition: transform .12s ease, box-shadow .12s ease; }
+.brutalist-shadow-sm { box-shadow: 4px 4px 0 0 var(--border-color); transition: transform .12s ease, box-shadow .12s ease; }
+
+/* Card surface styling to match image */
+.glass-card {
+  background: var(--card-bg) !important;
+  color: var(--card-text) !important;
+  border: var(--brutalist-border) solid var(--border-color) !important;
+  border-radius: 0 !important;
+  padding: 1rem;
+  position: relative;
+  overflow: visible;
+}
+.glass-card::before{ background: transparent; }
+
+/* Buttons and chips tuned to screenshot */
+.glass-btn {
+  background: var(--primary-container);
+  color: var(--border-color);
+  border: var(--brutalist-border) solid var(--border-color);
+  border-radius: 0;
+  font-weight:700;
+}
+.glass-btn:hover { transform: translateY(-1px); }
+
+.glass-chip {
+  display:inline-flex; align-items:center; gap:.25rem; padding:.25rem .5rem;
+  border:2px solid var(--border-color); background: var(--chip-bg); color: var(--card-text);
+  font-weight:700; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; border-radius: 0;
+}
+.glass-chip.expiring { color: #F59E0B; }
+.glass-chip.active { background: #ffffff; color: var(--border-color); border-color: var(--border-color); }
+
+/* Sidebar helpers matching the screenshot */
+.app-sidebar, aside[data-sidebar] {
+  background: var(--sidebar-bg) !important;
+  border-right: 4px solid var(--border-color) !important;
+  box-shadow: none !important;
+}
+
+/* Custom scrollbar to match image */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #ffffff; border-left: 3px solid #000; }
+::-webkit-scrollbar-thumb { background: var(--primary); border: 3px solid #ffffff; border-radius: 0; }
+
+/* Active press fallback */
+.brutalist-shadow:active { transform: translate(4px,4px); box-shadow: 4px 4px 0 0 var(--border-color); }

@@ -207,12 +207,12 @@ export function AddEditModal({
 
         {/* Header */}
         <div className="sticky top-0 z-20 flex items-center justify-between rounded-t-3xl p-5 border-b border-white/[0.06] bg-white/[0.03] backdrop-blur-xl">
-          <h2 className="font-headline text-xl font-bold text-white/90">
+          <h2 className="font-headline text-xl font-bold text-black">
             {isEditing ? 'Edit Subscription' : 'Add Subscription'}
           </h2>
           <button
             onClick={onClose}
-            className="rounded-xl p-2 text-white/30 hover:bg-white/[0.08] hover:text-white/60 transition-all duration-200"
+            className="rounded-xl p-2 text-black hover:bg-white/[0.08] hover:text-black transition-all duration-200"
           >
             <X size={18} />
           </button>
@@ -222,9 +222,9 @@ export function AddEditModal({
           {/* Template search */}
           {!isEditing && (
             <div className="relative">
-              <label className="mb-1.5 block text-sm font-semibold text-white/60">Quick Add from Template</label>
+              <label className="mb-1.5 block text-sm font-semibold text-black">Quick Add from Template</label>
               <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
                 <input
                   type="text"
                   placeholder="Search Netflix, Spotify, Notion..."
@@ -237,7 +237,7 @@ export function AddEditModal({
               {showTemplates && templateSearch && (
                 <div className="absolute z-30 mt-1 max-h-48 w-full overflow-y-auto rounded-2xl glass-heavy">
                   {filteredTemplates.length === 0 ? (
-                    <div className="p-3 text-sm text-white/30">No templates found</div>
+                    <div className="p-3 text-sm text-black">No templates found</div>
                   ) : (
                     filteredTemplates.map((t) => (
                       (() => {
@@ -253,8 +253,8 @@ export function AddEditModal({
                             {logoUrl && (
                               <img src={logoUrl} alt={t.name} className="h-6 w-6 rounded-lg object-contain bg-white/10 p-0.5" />
                             )}
-                            <span className="text-white/80">{t.name}</span>
-                            <span className="ml-auto text-xs text-white/30">{t.category_name}</span>
+                            <span className="text-black">{t.name}</span>
+                            <span className="ml-auto text-xs text-black">{t.category_name}</span>
                           </button>
                         );
                       })()
@@ -267,7 +267,7 @@ export function AddEditModal({
 
           {/* Name */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-white/60">Name *</label>
+            <label className="mb-1.5 block text-sm font-semibold text-black">Name *</label>
             <input
               {...register('name')}
               className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
@@ -278,7 +278,7 @@ export function AddEditModal({
 
           {/* Category */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-white/60">Category *</label>
+            <label className="mb-1.5 block text-sm font-semibold text-black">Category *</label>
             <div className="relative">
               <input
                 {...register('category_name')}
@@ -290,7 +290,7 @@ export function AddEditModal({
               {showCategorySuggestions && categoryInput && (
                 <div className="absolute z-30 mt-1 max-h-44 w-full overflow-y-auto rounded-2xl glass-heavy">
                   {filteredCategories.length === 0 ? (
-                    <div className="p-3 text-sm text-white/30">No existing categories. Press save to create &quot;{categoryInput}&quot;.</div>
+                    <div className="p-3 text-sm text-black">No existing categories. Press save to create &quot;{categoryInput}&quot;.</div>
                   ) : (
                     filteredCategories.map((cat) => (
                       <button
@@ -298,7 +298,7 @@ export function AddEditModal({
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => selectCategory(cat)}
-                        className="block w-full px-3 py-2.5 text-left text-sm text-white/75 transition-colors hover:bg-white/[0.06]"
+                        className="block w-full px-3 py-2.5 text-left text-sm text-black transition-colors hover:bg-white/[0.06]"
                       >
                         {cat.name}
                       </button>
@@ -307,13 +307,13 @@ export function AddEditModal({
                 </div>
               )}
             </div>
-            {errors.category_name && <p className="mt-1 text-xs text-rose-400">{errors.category_name.message}</p>}
+            {errors.category_name && <p className="mt-1 text-xs text-black">{errors.category_name.message}</p>}
           </div>
 
           {/* Amount + Currency */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-white/60">Amount *</label>
+              <label className="mb-1.5 block text-sm font-semibold text-rose-400">Amount *</label>
               <input
                 type="number"
                 step="0.01"
@@ -321,10 +321,10 @@ export function AddEditModal({
                 className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
                 placeholder="199.00"
               />
-              {errors.amount && <p className="text-xs text-rose-400 mt-1">{errors.amount.message}</p>}
+              {errors.amount && <p className="text-xs text-black mt-1">{errors.amount.message}</p>}
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-white/60">Currency</label>
+              <label className="mb-1.5 block text-sm font-semibold text-black">Currency</label>
               <select
                 {...register('currency')}
                 className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
@@ -338,7 +338,7 @@ export function AddEditModal({
 
           {/* Billing Cycle */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-white/60">Billing Cycle *</label>
+            <label className="mb-1.5 block text-sm font-semibold text-black">Billing Cycle *</label>
             <select
               {...register('billing_cycle')}
               className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
@@ -351,18 +351,18 @@ export function AddEditModal({
 
           {/* Next Renewal Date */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-white/60">Next Renewal Date *</label>
+            <label className="mb-1.5 block text-sm font-semibold text-black">Next Renewal Date *</label>
             <input
               type="date"
               {...register('next_renewal_date')}
               className="glass-input w-full rounded-xl px-3 py-2.5 text-sm [color-scheme:dark]"
             />
-            {errors.next_renewal_date && <p className="text-xs text-rose-400 mt-1">{errors.next_renewal_date.message}</p>}
+            {errors.next_renewal_date && <p className="text-xs text-black mt-1">{errors.next_renewal_date.message}</p>}
           </div>
 
           {/* Start Date */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-white/60">Start Date (optional)</label>
+            <label className="mb-1.5 block text-sm font-semibold text-black">Start Date (optional)</label>
             <input
               type="date"
               {...register('start_date')}
@@ -372,7 +372,7 @@ export function AddEditModal({
 
           {/* Notes */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-white/60">Notes (optional)</label>
+            <label className="mb-1.5 block text-sm font-semibold text-black">Notes (optional)</label>
             <textarea
               {...register('notes')}
               rows={2}
@@ -386,7 +386,7 @@ export function AddEditModal({
             <button
               type="button"
               onClick={onClose}
-              className="glass-chip rounded-xl px-4 py-2.5 text-sm font-semibold text-white/50 transition-all duration-300 hover:text-white/80"
+              className="glass-chip rounded-xl px-4 py-2.5 text-sm font-semibold text-black transition-all duration-300 hover:text-black/80"
             >
               Cancel
             </button>
