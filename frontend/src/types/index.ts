@@ -75,6 +75,9 @@ export interface AnalyticsSummary {
   total_yearly: number;
   active_count: number;
   renewing_this_week: number;
+  upcoming_count: number;
+  upcoming_total: number;
+  upcoming_window_days: number;
   currency: string;
   category_breakdown: {
     name: string;

@@ -4,62 +4,101 @@ import { getExchangeRate } from '../services/currencyService';
 
 const router = Router();
 
+const WEEKS_PER_YEAR = 52;
+const MONTHS_PER_YEAR = 12;
+
+function toMonthlyAmount(amount: number, billingCycle: string): number {
+  switch (billingCycle) {
+    case 'weekly':
+      return amount * (WEEKS_PER_YEAR / MONTHS_PER_YEAR);
+    case 'monthly':
+      return amount;
+    case 'quarterly':
+      return amount / 3;
+    case 'yearly':
+      return amount / MONTHS_PER_YEAR;
+    default:
+      return amount;
+  }
+}
+
+function roundCurrency(amount: number): number {
+  return Math.round(amount * 100) / 100;
+}
+
 // GET /api/analytics/summary
 router.get('/summary', async (req: Request, res: Response) => {
   try {
-    // Get user's preferred currency
-    const settingsResult = await pool.query('SELECT preferred_currency FROM user_settings LIMIT 1');
+    // Get user's preferred currency and reminder window
+    const settingsResult = await pool.query(
+      'SELECT preferred_currency, reminder_days_before FROM user_settings LIMIT 1'
+    );
     const preferredCurrency = settingsResult.rows[0]?.preferred_currency || 'INR';
+    const configuredReminderDays = Number(settingsResult.rows[0]?.reminder_days_before);
+    const reminderDays = Number.isFinite(configuredReminderDays) && configuredReminderDays > 0
+      ? configuredReminderDays
+      : 7;
 
     // Get all active subscriptions
     const subsResult = await pool.query(
-      "SELECT * FROM subscriptions WHERE status = 'active'"
+      `SELECT s.*, c.name as category_name
+       FROM subscriptions s
+       LEFT JOIN categories c ON s.category_id = c.id
+       WHERE s.status = 'active'`
     );
 
     let totalMonthly = 0;
     let totalYearly = 0;
+    let upcomingTotal = 0;
 
     const categoryBreakdown: Record<string, number> = {};
 
     for (const sub of subsResult.rows) {
       const rate = await getExchangeRate(sub.currency, preferredCurrency);
       const convertedAmount = parseFloat(sub.amount) * rate;
-
-      // Normalize to monthly
-      let monthly: number;
-      switch (sub.billing_cycle) {
-        case 'weekly': monthly = convertedAmount * 4.33; break;
-        case 'monthly': monthly = convertedAmount; break;
-        case 'quarterly': monthly = convertedAmount / 3; break;
-        case 'yearly': monthly = convertedAmount / 12; break;
-        default: monthly = convertedAmount;
-      }
+      const monthly = toMonthlyAmount(convertedAmount, sub.billing_cycle);
 
       totalMonthly += monthly;
-      totalYearly += monthly * 12;
+      totalYearly += monthly * MONTHS_PER_YEAR;
 
       // Get category name
-      const catResult = await pool.query('SELECT name FROM categories WHERE id = $1', [sub.category_id]);
-      const catName = catResult.rows[0]?.name || 'Other';
+      const catName = sub.category_name || 'Other';
       categoryBreakdown[catName] = (categoryBreakdown[catName] || 0) + monthly;
     }
 
     // Count stats
     const activeCount = subsResult.rows.length;
-    const upcomingResult = await pool.query(
+    const weeklyResult = await pool.query(
       "SELECT COUNT(*) FROM subscriptions WHERE status = 'active' AND next_renewal_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'"
     );
-    const renewingThisWeek = parseInt(upcomingResult.rows[0].count, 10);
+    const upcomingResult = await pool.query(
+      `SELECT *
+       FROM subscriptions
+       WHERE status = 'active'
+         AND next_renewal_date BETWEEN CURRENT_DATE AND CURRENT_DATE + $1 * INTERVAL '1 day'`,
+      [reminderDays]
+    );
+
+    for (const sub of upcomingResult.rows) {
+      const rate = await getExchangeRate(sub.currency, preferredCurrency);
+      upcomingTotal += parseFloat(sub.amount) * rate;
+    }
+
+    const renewingThisWeek = parseInt(weeklyResult.rows[0].count, 10);
+    const upcomingCount = upcomingResult.rows.length;
 
     res.json({
-      total_monthly: Math.round(totalMonthly * 100) / 100,
-      total_yearly: Math.round(totalYearly * 100) / 100,
+      total_monthly: roundCurrency(totalMonthly),
+      total_yearly: roundCurrency(totalYearly),
       active_count: activeCount,
       renewing_this_week: renewingThisWeek,
+      upcoming_count: upcomingCount,
+      upcoming_total: roundCurrency(upcomingTotal),
+      upcoming_window_days: reminderDays,
       currency: preferredCurrency,
       category_breakdown: Object.entries(categoryBreakdown).map(([name, amount]) => ({
         name,
-        amount: Math.round(amount * 100) / 100,
+        amount: roundCurrency(amount),
       })),
     });
   } catch (error) {

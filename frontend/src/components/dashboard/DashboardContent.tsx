@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getAnalyticsSummary } from '@/lib/api';
 import { AnalyticsSummary, Subscription } from '@/types';
 import { Plus, TrendingUp } from 'lucide-react';
@@ -37,11 +37,15 @@ export function DashboardContent() {
   const searchParams = useSearchParams();
   const searchQuery = (searchParams.get('q') ?? '').trim().toLowerCase();
 
+  const refreshSummary = useCallback(async () => {
+    const summaryData = await getAnalyticsSummary();
+    setSummary(summaryData);
+  }, []);
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const summaryData = await getAnalyticsSummary();
-        setSummary(summaryData);
+        await refreshSummary();
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       } finally {
@@ -49,12 +53,15 @@ export function DashboardContent() {
       }
     }
     fetchData();
-  }, []);
+  }, [refreshSummary]);
 
   useEffect(() => {
     const refresh = async () => {
       try {
-        const subscriptionData = await getSubscriptions();
+        const [subscriptionData] = await Promise.all([
+          getSubscriptions(),
+          refreshSummary(),
+        ]);
         setSubscriptions(subscriptionData);
       } catch (error) {
         console.error('Failed to fetch subscriptions:', error);
@@ -67,13 +74,13 @@ export function DashboardContent() {
     return () => {
       window.removeEventListener('subscriptions-updated', refresh);
     };
-  }, []);
+  }, [refreshSummary]);
 
   const monthlySpend = summary
     ? formatCurrency(summary.total_monthly, summary.currency)
     : '--';
   const upcomingTotal = summary
-    ? formatCurrency(summary.renewing_this_week > 0 ? summary.total_monthly * 0.32 : 0, summary.currency)
+    ? formatCurrency(summary.upcoming_total, summary.currency)
     : '--';
   const filteredSubscriptions = useMemo(() => {
     if (!searchQuery) return subscriptions;
@@ -145,7 +152,9 @@ export function DashboardContent() {
             <p className={`mt-4 font-headline text-4xl font-bold tracking-tight text-black ${loading ? 'animate-pulse' : ''}`}>
               {upcomingTotal}
             </p>
-            <p className="mt-2 text-sm text-black">Due in next 7 days</p>
+            <p className="mt-2 text-sm text-black">
+              Due in next {summary?.upcoming_window_days ?? 7} days
+            </p>
             <div className="mt-6 flex gap-1">
               <div className="h-1 flex-1 rounded-full bg-white/80" />
               <div className="h-1 flex-1 rounded-full bg-white/40" />
