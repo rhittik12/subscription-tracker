@@ -106,7 +106,7 @@ export function SettingsForm() {
           <select
             value={preferredCurrency}
             onChange={(e) => setPreferredCurrency(e.target.value)}
-            className="glass-input w-full sm:w-auto rounded-xl px-3 py-2.5 text-sm"
+            className="w-full sm:w-auto border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
           >
             {CURRENCIES.map((c) => (
               <option key={c.code} value={c.code} className="bg-white text-black">
@@ -134,7 +134,7 @@ export function SettingsForm() {
                 onChange={(e) => setEmailNotifications(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-white/10 peer-focus:ring-2 peer-focus:ring-white/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/70 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white/60"></div>
+              <div className="w-full sm:w-auto border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"></div>
             </label>
           </div>
           <input
@@ -142,7 +142,7 @@ export function SettingsForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
-            className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
+            className="w-full border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black placeholder:text-black/60 brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
           />
           <button
             onClick={() => handleTestNotification('email')}
@@ -180,7 +180,7 @@ export function SettingsForm() {
             value={whatsappNumber}
             onChange={(e) => setWhatsappNumber(e.target.value)}
             placeholder="+91 9876543210"
-            className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
+            className="w-full border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black placeholder:text-black/60 brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
           />
           <p className="text-xs text-black mt-1.5">Include country code (e.g. +91)</p>
           <button
@@ -204,7 +204,7 @@ export function SettingsForm() {
           <select
             value={reminderDays}
             onChange={(e) => setReminderDays(Number(e.target.value))}
-            className="glass-input w-full sm:w-auto rounded-xl px-3 py-2.5 text-sm"
+            className="w-full sm:w-auto border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
           >
             <option value={1} className="bg-white text-black">1 day before</option>
             <option value={3} className="bg-white text-black">3 days before</option>
@@ -221,7 +221,7 @@ export function SettingsForm() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-black hover:text-black transition-colors disabled:opacity-30 disabled:hover:text-black"
+          className="inline-flex items-center gap-2 border-[3px] border-black bg-white px-6 py-3 text-sm font-black uppercase text-black brutalist-shadow transition-all disabled:opacity-50 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0_0_#000000] disabled:hover:translate-x-0 disabled:hover:translate-y-0"
         >
           <Save size={18} />
           {saving ? 'Saving...' : 'Save Settings'}
