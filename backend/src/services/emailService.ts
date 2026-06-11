@@ -13,8 +13,7 @@ const transporter = nodemailer.createTransport({
 
 export async function sendEmail(to: string, subject: string, text: string): Promise<void> {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-    console.warn('Email not configured. Skipping email send.');
-    return;
+    throw new Error('Email is not configured. Please set GMAIL_USER and GMAIL_APP_PASSWORD, then restart the backend.');
   }
 
   const htmlContent = `
@@ -53,11 +52,16 @@ export async function sendEmail(to: string, subject: string, text: string): Prom
     </html>
   `;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"Subscription Tracker" <${process.env.GMAIL_USER}>`,
     to,
     subject,
     text,
     html: htmlContent,
+  });
+
+  console.log('Email accepted by SMTP:', {
+    messageId: info.messageId,
+    rejected: info.rejected,
   });
 }
