@@ -86,7 +86,7 @@ router.post('/test-notification', async (req: Request, res: Response) => {
       await sendEmail(
         userSettings.email,
         'Test Reminder: Subscription Renewal',
-        `Your ${testData.name} subscription renews on ${testData.next_renewal_date} for ${testData.amount} ${testData.currency}.`
+        `Your ${testData.name} renews on ${testData.next_renewal_date} for ${testData.amount} ${testData.currency}.`
       );
       res.json({ message: 'Test email sent successfully' });
     } else if (type === 'whatsapp') {
