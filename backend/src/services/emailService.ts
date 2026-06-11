@@ -61,9 +61,7 @@ export async function sendEmail(to: string, subject: string, text: string): Prom
   });
 
   console.log('Email accepted by SMTP:', {
-    to,
     messageId: info.messageId,
-    accepted: info.accepted,
     rejected: info.rejected,
   });
 }
