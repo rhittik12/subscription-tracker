@@ -25,6 +25,19 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+const FIELD_CLASSNAME =
+  'w-full border-[3px] border-black bg-white px-3 py-2.5 text-sm font-semibold text-black outline-none transition-all placeholder:text-black/45 focus:bg-[#FDE68A] focus:shadow-brutalist-sm';
+const FIELD_WITH_ICON_CLASSNAME =
+  'w-full border-[3px] border-black bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-black outline-none transition-all placeholder:text-black/45 focus:bg-[#FDE68A] focus:shadow-brutalist-sm';
+const LABEL_CLASSNAME =
+  'mb-1.5 block text-xs font-black uppercase tracking-[0.14em] text-black';
+const ERROR_CLASSNAME =
+  'mt-1 border-[3px] border-black bg-[#FCA5A5] px-2 py-1 text-xs font-black uppercase text-black';
+const DROPDOWN_CLASSNAME =
+  'absolute z-30 mt-2 max-h-48 w-full overflow-y-auto border-[3px] border-black bg-white shadow-brutalist-sm';
+const DROPDOWN_ITEM_CLASSNAME =
+  'flex w-full items-center gap-3 border-b-[3px] border-black p-3 text-left text-sm font-bold text-black transition-colors last:border-b-0 hover:bg-[#d9f0c6]';
+
 interface AddEditModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -196,33 +209,28 @@ export function AddEditModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop with heavier blur */}
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
-      {/* Modal — heavy glass */}
-      <div className="relative mx-4 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl glass-heavy">
-        {/* Inner light reflection */}
-        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/[0.06] to-transparent pointer-events-none z-0" />
-
-        {/* Header */}
-        <div className="sticky top-0 z-20 flex items-center justify-between rounded-t-3xl p-5 border-b border-white/[0.06] bg-white/[0.03] backdrop-blur-xl">
+      <div className="brutalist-shadow relative max-h-[90vh] w-full max-w-lg overflow-y-auto border-[3px] border-black bg-[#89ACE7]">
+        <div className="sticky top-0 z-20 flex items-center justify-between border-b-[3px] border-black bg-[#FDE68A] p-5">
           <h2 className="font-headline text-xl font-bold text-black">
             {isEditing ? 'Edit Subscription' : 'Add Subscription'}
           </h2>
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-xl p-2 text-black hover:bg-white/[0.08] hover:text-black transition-all duration-200"
+            className="border-[3px] border-black bg-white p-2 text-black transition-all hover:bg-[#FCA5A5] active:translate-x-1 active:translate-y-1"
+            aria-label="Close subscription form"
           >
             <X size={18} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="relative z-10 space-y-4 p-5">
-          {/* Template search */}
           {!isEditing && (
             <div className="relative">
-              <label className="mb-1.5 block text-sm font-semibold text-black">Quick Add from Template</label>
+              <label className={LABEL_CLASSNAME}>Quick Add from Template</label>
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
                 <input
@@ -231,13 +239,13 @@ export function AddEditModal({
                   value={templateSearch}
                   onChange={(e) => { setTemplateSearch(e.target.value); setShowTemplates(true); }}
                   onFocus={() => setShowTemplates(true)}
-                  className="glass-input w-full rounded-xl pl-9 pr-3 py-2.5 text-sm"
+                  className={FIELD_WITH_ICON_CLASSNAME}
                 />
               </div>
               {showTemplates && templateSearch && (
-                <div className="absolute z-30 mt-1 max-h-48 w-full overflow-y-auto rounded-2xl glass-heavy">
+                <div className={DROPDOWN_CLASSNAME}>
                   {filteredTemplates.length === 0 ? (
-                    <div className="p-3 text-sm text-black">No templates found</div>
+                    <div className="p-3 text-sm font-bold text-black">No templates found</div>
                   ) : (
                     filteredTemplates.map((t) => (
                       (() => {
@@ -248,13 +256,13 @@ export function AddEditModal({
                             key={t.id}
                             type="button"
                             onClick={() => selectTemplate(t)}
-                            className="flex w-full items-center gap-3 p-3 text-left text-sm hover:bg-white/[0.06] transition-colors"
+                            className={DROPDOWN_ITEM_CLASSNAME}
                           >
                             {logoUrl && (
-                              <img src={logoUrl} alt={t.name} className="h-6 w-6 rounded-lg object-contain bg-white/10 p-0.5" />
+                              <img src={logoUrl} alt={t.name} className="h-6 w-6 border-2 border-black bg-white object-contain p-0.5" />
                             )}
-                            <span className="text-black">{t.name}</span>
-                            <span className="ml-auto text-xs text-black">{t.category_name}</span>
+                            <span>{t.name}</span>
+                            <span className="ml-auto text-xs">{t.category_name}</span>
                           </button>
                         );
                       })()
@@ -265,32 +273,30 @@ export function AddEditModal({
             </div>
           )}
 
-          {/* Name */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-black">Name *</label>
+            <label className={LABEL_CLASSNAME}>Name *</label>
             <input
               {...register('name')}
-              className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
+              className={FIELD_CLASSNAME}
               placeholder="e.g. Netflix"
             />
-            {errors.name && <p className="text-xs text-rose-400 mt-1">{errors.name.message}</p>}
+            {errors.name && <p className={ERROR_CLASSNAME}>{errors.name.message}</p>}
           </div>
 
-          {/* Category */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-black">Category *</label>
+            <label className={LABEL_CLASSNAME}>Category *</label>
             <div className="relative">
               <input
                 {...register('category_name')}
                 placeholder="Type category (e.g. Entertainment)"
                 onFocus={() => setShowCategorySuggestions(true)}
                 onBlur={() => setTimeout(() => setShowCategorySuggestions(false), 120)}
-                className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
+                className={FIELD_CLASSNAME}
               />
               {showCategorySuggestions && categoryInput && (
-                <div className="absolute z-30 mt-1 max-h-44 w-full overflow-y-auto rounded-2xl glass-heavy">
+                <div className={DROPDOWN_CLASSNAME}>
                   {filteredCategories.length === 0 ? (
-                    <div className="p-3 text-sm text-black">No existing categories. Press save to create &quot;{categoryInput}&quot;.</div>
+                    <div className="p-3 text-sm font-bold text-black">No existing categories. Press save to create &quot;{categoryInput}&quot;.</div>
                   ) : (
                     filteredCategories.map((cat) => (
                       <button
@@ -298,7 +304,7 @@ export function AddEditModal({
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => selectCategory(cat)}
-                        className="block w-full px-3 py-2.5 text-left text-sm text-black transition-colors hover:bg-white/[0.06]"
+                        className={DROPDOWN_ITEM_CLASSNAME}
                       >
                         {cat.name}
                       </button>
@@ -307,93 +313,87 @@ export function AddEditModal({
                 </div>
               )}
             </div>
-            {errors.category_name && <p className="mt-1 text-xs text-black">{errors.category_name.message}</p>}
+            {errors.category_name && <p className={ERROR_CLASSNAME}>{errors.category_name.message}</p>}
           </div>
 
-          {/* Amount + Currency */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-rose-400">Amount *</label>
+              <label className={LABEL_CLASSNAME}>Amount *</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('amount', { valueAsNumber: true })}
-                className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
+                className={FIELD_CLASSNAME}
                 placeholder="199.00"
               />
-              {errors.amount && <p className="text-xs text-black mt-1">{errors.amount.message}</p>}
+              {errors.amount && <p className={ERROR_CLASSNAME}>{errors.amount.message}</p>}
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-black">Currency</label>
+              <label className={LABEL_CLASSNAME}>Currency</label>
               <select
                 {...register('currency')}
-                className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
+                className={FIELD_CLASSNAME}
               >
                 {CURRENCIES.map((c) => (
-                  <option key={c.code} value={c.code} className="bg-[#0f1223] text-white">{c.symbol} {c.code}</option>
+                  <option key={c.code} value={c.code}>{c.symbol} {c.code}</option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* Billing Cycle */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-black">Billing Cycle *</label>
+            <label className={LABEL_CLASSNAME}>Billing Cycle *</label>
             <select
               {...register('billing_cycle')}
-              className="glass-input w-full rounded-xl px-3 py-2.5 text-sm"
+              className={FIELD_CLASSNAME}
             >
               {BILLING_CYCLES.map((c) => (
-                <option key={c.value} value={c.value} className="bg-[#0f1223] text-white">{c.label}</option>
+                <option key={c.value} value={c.value}>{c.label}</option>
               ))}
             </select>
           </div>
 
-          {/* Next Renewal Date */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-black">Next Renewal Date *</label>
+            <label className={LABEL_CLASSNAME}>Next Renewal Date *</label>
             <input
               type="date"
               {...register('next_renewal_date')}
-              className="glass-input w-full rounded-xl px-3 py-2.5 text-sm [color-scheme:dark]"
+              className={`${FIELD_CLASSNAME} [color-scheme:light]`}
             />
-            {errors.next_renewal_date && <p className="text-xs text-black mt-1">{errors.next_renewal_date.message}</p>}
+            {errors.next_renewal_date && <p className={ERROR_CLASSNAME}>{errors.next_renewal_date.message}</p>}
           </div>
 
-          {/* Start Date */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-black">Start Date (optional)</label>
+            <label className={LABEL_CLASSNAME}>Start Date (optional)</label>
             <input
               type="date"
               {...register('start_date')}
-              className="glass-input w-full rounded-xl px-3 py-2.5 text-sm [color-scheme:dark]"
+              className={`${FIELD_CLASSNAME} [color-scheme:light]`}
             />
           </div>
 
-          {/* Notes */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-black">Notes (optional)</label>
+            <label className={LABEL_CLASSNAME}>Notes (optional)</label>
             <textarea
               {...register('notes')}
               rows={2}
-              className="glass-input w-full resize-none rounded-xl px-3 py-2.5 text-sm"
+              className={`${FIELD_CLASSNAME} resize-none`}
               placeholder="Family plan, shared with..."
             />
           </div>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex flex-col justify-end gap-3 border-t-[3px] border-black pt-5 sm:flex-row">
             <button
               type="button"
               onClick={onClose}
-              className="glass-chip rounded-xl px-4 py-2.5 text-sm font-semibold text-black transition-all duration-300 hover:text-black/80"
+              className="border-[3px] border-black bg-white px-4 py-2.5 text-sm font-black uppercase text-black transition-all hover:bg-[#FCA5A5] active:translate-x-1 active:translate-y-1"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="glass-btn rounded-xl px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
+              className="border-[3px] border-black bg-[#d9f0c6] px-5 py-2.5 text-sm font-black uppercase text-black shadow-brutalist-sm transition-all hover:bg-[#b8e986] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Add Subscription'}
             </button>
