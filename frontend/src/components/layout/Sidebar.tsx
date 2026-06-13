@@ -25,8 +25,8 @@ export function Sidebar() {
       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none rounded-none" />
 
       <div className="relative z-10 px-4 pb-8">
-        <h1 className="font-headline text-lg font-extrabold tracking-tight text-black">
-          subscription tracker
+        <h1 className="font-headline text-4xl font-extrabold tracking-tight text-black">
+          Subscription Tracker
         </h1>
         <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-black">
           Wealth Management
@@ -64,7 +64,6 @@ export function Sidebar() {
           </div>
           <div>
             <p className="text-sm font-bold text-black">Workspace User</p>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-black">Premium</p>
           </div>
         </div>
       </div>

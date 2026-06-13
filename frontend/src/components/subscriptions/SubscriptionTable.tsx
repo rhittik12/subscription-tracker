@@ -9,7 +9,6 @@ import {
   Play,
   Trash2,
   Edit,
-  MoreHorizontal,
 } from 'lucide-react';
 
 type SubscriptionStatus = Subscription['status'];
@@ -94,8 +93,6 @@ export function SubscriptionTable({
                 {subscriptions.map((sub) => {
                   const daysUntil = getDaysUntil(sub.next_renewal_date);
                   const amount = Number(sub.amount);
-                  const isMenuOpen = openMenu === sub.id;
-                  const nextStatus: SubscriptionStatus = sub.status === 'active' ? 'paused' : 'active';
 
                   return (
                     <tr key={sub.id} className="bg-white transition-colors duration-200 hover:bg-[#d9f0c6]">
@@ -151,56 +148,39 @@ export function SubscriptionTable({
                         </span>
                       </td>
                       <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
-                        <div className="relative inline-block">
+                        <div className="flex items-center justify-center gap-2">
                           <button
                             type="button"
-                            onClick={() => setOpenMenu(openMenu === sub.id ? null : sub.id)}
-                            className="border-[3px] border-black bg-white p-1.5 text-black transition-all duration-200 hover:bg-[#89ACE7]"
-                            aria-label={`Open actions for ${sub.name}`}
-                            aria-haspopup="menu"
-                            aria-expanded={isMenuOpen}
+                            onClick={() => onEdit(sub)}
+                            className="border-[2px] border-black p-2 hover:bg-[#89ACE7]"
                           >
-                            <MoreHorizontal size={16} />
+                            <Edit size={16} />
                           </button>
-                          {isMenuOpen && (
-                            <>
-                              <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />
-                              <div
-                                className="absolute right-0 top-full z-20 mt-3 w-40 rounded-2xl glass-heavy py-1"
-                                role="menu"
-                                aria-label={`${sub.name} actions`}
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() => { onEdit(sub); setOpenMenu(null); }}
-                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-black hover:bg-white/[0.06] hover:text-white/90 transition-colors"
-                                  role="menuitem"
-                                >
-                                  <Edit size={14} /> Edit
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => { onToggleStatus(sub.id, nextStatus); setOpenMenu(null); }}
-                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-black hover:bg-white/[0.06] hover:text-white/90 transition-colors"
-                                  role="menuitem"
-                                >
-                                  {sub.status === 'active' ? (
-                                    <><Pause size={14} /> Pause</>
-                                  ) : (
-                                    <><Play size={14} /> Resume</>
-                                  )}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => { onDelete(sub.id); setOpenMenu(null); }}
-                                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-black hover:bg-rose-500/10 transition-colors"
-                                  role="menuitem"
-                                >
-                                  <Trash2 size={14} /> Delete
-                                </button>
-                              </div>
-                            </>
-                          )}
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              onToggleStatus(
+                                sub.id,
+                                sub.status === 'active' ? 'paused' : 'active'
+                              )
+                            }
+                            className="border-[2px] border-black p-2 hover:bg-[#89ACE7]"
+                          >
+                            {sub.status === 'active' ? (
+                              <Pause size={16} />
+                            ) : (
+                              <Play size={16} />
+                            )}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => onDelete(sub.id)}
+                            className="border-[2px] border-black p-2 hover:bg-red-200"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </td>
                     </tr>
