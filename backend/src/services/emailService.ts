@@ -45,7 +45,7 @@ export async function sendEmail(to: string, subject: string, text: string): Prom
           <a href="${process.env.APP_URL || 'http://localhost:3000'}" class="btn">View Dashboard</a>
         </div>
         <div class="footer">
-          <p>Subscription Tracker</p>
+          <p>SubTrack</p>
         </div>
       </div>
     </body>
@@ -53,7 +53,7 @@ export async function sendEmail(to: string, subject: string, text: string): Prom
   `;
 
   const info = await transporter.sendMail({
-    from: `"Subscription Tracker" <${process.env.GMAIL_USER}>`,
+    from: `"SubTrack" <${process.env.GMAIL_USER}>`,
     to,
     subject,
     text,

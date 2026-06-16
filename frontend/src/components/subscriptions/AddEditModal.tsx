@@ -209,11 +209,11 @@ export function AddEditModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
       <div className="brutalist-shadow relative max-h-[90vh] w-full max-w-lg overflow-y-auto border-[3px] border-black bg-[#89ACE7]">
-        <div className="sticky top-0 z-20 flex items-center justify-between border-b-[3px] border-black bg-[#FDE68A] p-5">
+        <div className="sticky top-0 z-20 flex items-center justify-between border-b-[3px] border-black bg-[#FDE68A] p-4 sm:p-5">
           <h2 className="font-headline text-xl font-bold text-black">
             {isEditing ? 'Edit Subscription' : 'Add Subscription'}
           </h2>
@@ -227,7 +227,7 @@ export function AddEditModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="relative z-10 space-y-4 p-5">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="relative z-10 space-y-4 p-4 sm:p-5">
           {!isEditing && (
             <div className="relative">
               <label className={LABEL_CLASSNAME}>Quick Add from Template</label>

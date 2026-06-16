@@ -11,7 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/subscriptions', label: 'Subscriptions', icon: CreditCard },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
@@ -26,7 +26,7 @@ export function Sidebar() {
 
       <div className="relative z-10 px-4 pb-8">
         <h1 className="font-headline text-4xl font-extrabold tracking-tight text-black">
-          Subscription Tracker
+          SubTrack
         </h1>
         <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-black">
           Wealth Management
