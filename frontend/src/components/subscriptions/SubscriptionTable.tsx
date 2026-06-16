@@ -76,7 +76,7 @@ export function SubscriptionTable({
       ) : subscriptions.length > 0 ? (
         <div className="border-[3px] border-black bg-white brutalist-shadow overflow-hidden">
           <div className="overflow-x-auto relative z-10">
-            <table className="w-full border-collapse" aria-label="Subscriptions table">
+            <table className="w-full min-w-[900px] border-collapse lg:min-w-0" aria-label="Subscriptions table">
               <thead className="bg-[#89ACE7]">
                 <tr className="border-b-[3px] border-black">
                   {TABLE_HEADERS.map((header) => (

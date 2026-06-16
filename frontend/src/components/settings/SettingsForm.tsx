@@ -97,7 +97,7 @@ export function SettingsForm() {
       )}
 
       {/* Currency */}
-      <div className="border-[3px] border-black bg-white p-6 brutalist-shadow">
+      <div className="border-[3px] border-black bg-[#ffec70] p-4 brutalist-shadow sm:p-6">
         <div className="relative z-10">
           <h3 className="font-semibold text-black mb-4">Display Currency</h3>
           <p className="text-sm text-black mb-3">
@@ -118,14 +118,14 @@ export function SettingsForm() {
       </div>
 
       {/* Email Notifications */}
-      <div className="border-[3px] border-black bg-white p-6 brutalist-shadow">
+      <div className="border-[3px] border-black bg-[#ffec70] p-4 brutalist-shadow sm:p-6">
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="border-[3px] border-black bg-white p-2.5">
                 <Mail size={18} className="text-black" />
               </div>
-              <h3 className="font-semibold text-black">Email Notifications</h3>
+              <h3 className="text-sm font-semibold text-black sm:text-base">Email Notifications</h3>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -156,14 +156,14 @@ export function SettingsForm() {
       </div>
 
       {/* WhatsApp Notifications */}
-      <div className="border-[3px] border-black bg-white p-6 brutalist-shadow">
+      <div className="border-[3px] border-black bg-[#ffec70] p-4 brutalist-shadow sm:p-6">
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="border-[3px] border-black bg-white p-2.5">
                 <MessageSquare size={18} className="text-black" />
               </div>
-              <h3 className="font-semibold text-black">WhatsApp Notifications</h3>
+              <h3 className="text-sm font-semibold text-black sm:text-base">WhatsApp Notifications</h3>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -195,7 +195,7 @@ export function SettingsForm() {
       </div>
 
       {/* Reminder Days */}
-      <div className="border-[3px] border-black bg-white p-6 brutalist-shadow">
+      <div className="border-[3px] border-black bg-[#ffec70] p-4 brutalist-shadow sm:p-6">
         <div className="relative z-10">
           <h3 className="font-semibold text-black mb-4">Reminder Timing</h3>
           <p className="text-sm text-black mb-3">
@@ -217,11 +217,11 @@ export function SettingsForm() {
       </div>
 
       {/* Save */}
-      <div className="flex justify-end">
+      <div className="flex justify-stretch sm:justify-end">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex items-center gap-2 border-[3px] border-black bg-white px-6 py-3 text-sm font-black uppercase text-black brutalist-shadow transition-all disabled:opacity-50 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0_0_#000000] disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+          className="mobile-full-button inline-flex w-full items-center justify-center gap-2 border-[3px] border-black bg-white px-6 py-3 text-sm font-black uppercase text-black brutalist-shadow transition-all disabled:opacity-50 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0_0_#000000] disabled:hover:translate-x-0 disabled:hover:translate-y-0 sm:w-auto"
         >
           <Save size={18} />
           {saving ? 'Saving...' : 'Save Settings'}

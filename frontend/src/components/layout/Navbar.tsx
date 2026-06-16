@@ -16,7 +16,7 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isSearchableRoute = pathname === '/';
+  const isSearchableRoute = pathname === '/dashboard';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState(isSearchableRoute ? searchParams.get('q') ?? '' : '');
   const currentSearch = searchParams.get('q') ?? '';
@@ -50,18 +50,19 @@ export function Navbar() {
   const searchPlaceholder = 'Search services, categories, or domains...';
 
   const links = [
-    { href: '/', label: 'Dashboard' },
+    { href: '/dashboard', label: 'Dashboard' },
     { href: '/subscriptions', label: 'Subscriptions' },
     { href: '/settings', label: 'Settings' },
   ];
 
   return (
     <nav className="sticky top-0 z-40 glass-panel rounded-2xl px-4 py-4 lg:px-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex flex-1 items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap sm:gap-4">
+        <div className="order-1 flex min-w-0 flex-1 items-center gap-3">
           <button
-            className="lg:hidden rounded-xl p-2 text-black transition-colors hover:bg-white/10 hover:text-white/80"
+            className="mobile-nav-button shrink-0 lg:hidden rounded-xl p-2 text-black transition-colors hover:bg-white/10 hover:text-white/80"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -86,14 +87,14 @@ export function Navbar() {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          <button className="glass-chip rounded-xl p-2.5 text-black transition-all duration-300 hover:text-black">
+        <div className="order-2 flex shrink-0 items-center gap-2">
+          <button className="mobile-nav-button glass-chip rounded-xl p-2.5 text-black transition-all duration-300 hover:text-black" aria-label="Notifications">
             <Bell size={18} />
           </button>
-          <button className="glass-chip rounded-xl p-2.5 text-black transition-all duration-300 hover:text-black">
+          <button className="mobile-hide glass-chip hidden rounded-xl p-2.5 text-black transition-all duration-300 hover:text-black sm:inline-flex" aria-label="Help">
             <CircleHelp size={18} />
           </button>
-          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-white/80 to-white/40 shadow-[0_0_20px_rgba(255,255,255,0.2)]" />
+          <div className="hidden h-9 w-9 rounded-full bg-gradient-to-br from-white/80 to-white/40 shadow-[0_0_20px_rgba(255,255,255,0.2)] sm:block" />
         </div>
       </div>
 
