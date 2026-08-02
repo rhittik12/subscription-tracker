@@ -38,8 +38,8 @@ router.put('/', async (req: Request, res: Response) => {
       `UPDATE user_settings
        SET preferred_currency = COALESCE($1, preferred_currency),
            email = COALESCE($2, email),
-           email_notifications = COALESCE($4, email_notifications),
-           reminder_days_before = COALESCE($5, reminder_days_before),
+           email_notifications = COALESCE($3, email_notifications),
+           reminder_days_before = COALESCE($4, reminder_days_before),
            updated_at = NOW()
        WHERE id = (SELECT id FROM user_settings LIMIT 1)
        RETURNING *`,
