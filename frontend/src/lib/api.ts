@@ -100,7 +100,7 @@ export async function updateSettings(settings: Partial<UserSettings>): Promise<U
   return data;
 }
 
-export async function sendTestNotification(type: 'email' | 'whatsapp'): Promise<{ message: string }> {
+export async function sendTestNotification(type: 'email'): Promise<{ message: string }> {
   const { data } = await api.post('/api/settings/test-notification', { type });
   return data;
 }

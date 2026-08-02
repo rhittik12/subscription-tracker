@@ -72,9 +72,7 @@ const templateSeeds = [
 const defaultUserSettings = {
   preferredCurrency: 'INR',
   email: '',
-  whatsappNumber: '',
   emailNotifications: true,
-  whatsappNotifications: true,
   reminderDaysBefore: 7,
 } satisfies Omit<NewUserSetting, 'id' | 'createdAt' | 'updatedAt'>;
 

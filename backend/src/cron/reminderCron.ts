@@ -1,7 +1,6 @@
 import cron from 'node-cron';
 import pool from '../config/db';
 import { sendEmail } from '../services/emailService';
-import { sendWhatsApp } from '../services/whatsappService';
 
 async function advancePastDueRenewals(): Promise<void> {
   try {
@@ -96,31 +95,6 @@ async function sendReminders(): Promise<void> {
             [sub.id, sub.next_renewal_date, message, error.message]
           );
           console.error(`Failed to send email for ${sub.name}:`, error.message);
-        }
-      }
-
-      // Send WhatsApp
-      if (settings.whatsapp_notifications && settings.whatsapp_number) {
-        try {
-          await sendWhatsApp(
-            settings.whatsapp_number,
-            sub.name,
-            renewalDate,
-            `${sub.amount} ${sub.currency}`
-          );
-          await pool.query(
-            `INSERT INTO notification_logs (subscription_id, type, status, renewal_date, message)
-             VALUES ($1, 'whatsapp', 'sent', $2, $3)`,
-            [sub.id, sub.next_renewal_date, message]
-          );
-          console.log(`WhatsApp reminder sent for ${sub.name}`);
-        } catch (error: any) {
-          await pool.query(
-            `INSERT INTO notification_logs (subscription_id, type, status, renewal_date, message, error_message)
-             VALUES ($1, 'whatsapp', 'failed', $2, $3, $4)`,
-            [sub.id, sub.next_renewal_date, message, error.message]
-          );
-          console.error(`Failed to send WhatsApp for ${sub.name}:`, error.message);
         }
       }
     }
