@@ -10,14 +10,11 @@ export function SettingsForm() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testingEmail, setTestingEmail] = useState(false);
-  const [testingWhatsApp, setTestingWhatsApp] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [preferredCurrency, setPreferredCurrency] = useState('INR');
   const [email, setEmail] = useState('');
-  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [whatsappNotifications, setWhatsappNotifications] = useState(true);
   const [reminderDays, setReminderDays] = useState(7);
 
   useEffect(() => {
@@ -27,9 +24,7 @@ export function SettingsForm() {
         setSettings(data);
         setPreferredCurrency(data.preferred_currency);
         setEmail(data.email || '');
-        setWhatsappNumber(data.whatsapp_number || '');
         setEmailNotifications(data.email_notifications);
-        setWhatsappNotifications(data.whatsapp_notifications);
         setReminderDays(data.reminder_days_before);
       } catch (error) {
         console.error('Failed to fetch settings:', error);
@@ -47,9 +42,7 @@ export function SettingsForm() {
       const updated = await updateSettings({
         preferred_currency: preferredCurrency,
         email,
-        whatsapp_number: whatsappNumber,
         email_notifications: emailNotifications,
-        whatsapp_notifications: whatsappNotifications,
         reminder_days_before: reminderDays,
       });
       setSettings(updated);
@@ -61,9 +54,8 @@ export function SettingsForm() {
     }
   }
 
-  async function handleTestNotification(type: 'email' | 'whatsapp') {
-    const setTesting = type === 'email' ? setTestingEmail : setTestingWhatsApp;
-    setTesting(true);
+  async function handleTestNotification(type: 'email') {
+    setTestingEmail(true);
     setMessage(null);
     try {
       const result = await sendTestNotification(type);
@@ -71,7 +63,7 @@ export function SettingsForm() {
     } catch (error: any) {
       setMessage({ type: 'error', text: error.response?.data?.error || `Failed to send test ${type}` });
     } finally {
-      setTesting(false);
+      setTestingEmail(false);
     }
   }
 
@@ -151,45 +143,6 @@ export function SettingsForm() {
           >
             <Send size={14} />
             {testingEmail ? 'Sending...' : 'Send Test Email'}
-          </button>
-        </div>
-      </div>
-
-      {/* WhatsApp Notifications */}
-      <div className="border-[3px] border-black bg-[#ffec70] p-4 brutalist-shadow sm:p-6">
-        <div className="relative z-10">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="border-[3px] border-black bg-white p-2.5">
-                <MessageSquare size={18} className="text-black" />
-              </div>
-              <h3 className="text-sm font-semibold text-black sm:text-base">WhatsApp Notifications</h3>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={whatsappNotifications}
-                onChange={(e) => setWhatsappNotifications(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-white/10 peer-focus:ring-2 peer-focus:ring-white/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/70 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white/60"></div>
-            </label>
-          </div>
-          <input
-            type="tel"
-            value={whatsappNumber}
-            onChange={(e) => setWhatsappNumber(e.target.value)}
-            placeholder="+91 9876543210"
-            className="w-full border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black placeholder:text-black/60 brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
-          />
-          <p className="text-xs text-black mt-1.5">Include country code (e.g. +91)</p>
-          <button
-            onClick={() => handleTestNotification('whatsapp')}
-            disabled={testingWhatsApp || !whatsappNumber}
-            className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-black hover:text-black transition-colors disabled:opacity-30 disabled:hover:text-black"
-          >
-            <Send size={14} />
-            {testingWhatsApp ? 'Sending...' : 'Send Test WhatsApp'}
           </button>
         </div>
       </div>
