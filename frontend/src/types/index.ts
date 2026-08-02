@@ -62,9 +62,7 @@ export interface UserSettings {
   id: number;
   preferred_currency: string;
   email: string;
-  whatsapp_number: string;
   email_notifications: boolean;
-  whatsapp_notifications: boolean;
   reminder_days_before: number;
   created_at: string;
   updated_at: string;

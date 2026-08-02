@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import pool from '../config/db';
 import { sendEmail } from '../services/emailService';
-import { sendWhatsApp } from '../services/whatsappService';
 
 const router = Router();
 
@@ -12,8 +11,8 @@ router.get('/', async (_req: Request, res: Response) => {
     if (result.rows.length === 0) {
       // Create default settings
       const insert = await pool.query(
-        `INSERT INTO user_settings (preferred_currency, email, whatsapp_number, email_notifications, whatsapp_notifications, reminder_days_before)
-         VALUES ('INR', '', '', true, true, 7)
+        `INSERT INTO user_settings (preferred_currency, email, email_notifications, reminder_days_before)
+         VALUES ('INR', '', true, 7)
          RETURNING *`
       );
       return res.json(insert.rows[0]);
@@ -31,9 +30,7 @@ router.put('/', async (req: Request, res: Response) => {
     const {
       preferred_currency,
       email,
-      whatsapp_number,
       email_notifications,
-      whatsapp_notifications,
       reminder_days_before,
     } = req.body;
 
@@ -41,14 +38,12 @@ router.put('/', async (req: Request, res: Response) => {
       `UPDATE user_settings
        SET preferred_currency = COALESCE($1, preferred_currency),
            email = COALESCE($2, email),
-           whatsapp_number = COALESCE($3, whatsapp_number),
-           email_notifications = COALESCE($4, email_notifications),
-           whatsapp_notifications = COALESCE($5, whatsapp_notifications),
-           reminder_days_before = COALESCE($6, reminder_days_before),
+           email_notifications = COALESCE($3, email_notifications),
+           reminder_days_before = COALESCE($4, reminder_days_before),
            updated_at = NOW()
        WHERE id = (SELECT id FROM user_settings LIMIT 1)
        RETURNING *`,
-      [preferred_currency, email, whatsapp_number, email_notifications, whatsapp_notifications, reminder_days_before]
+      [preferred_currency, email, email_notifications, reminder_days_before]
     );
 
     if (result.rows.length === 0) {
@@ -64,7 +59,7 @@ router.put('/', async (req: Request, res: Response) => {
 // POST /api/settings/test-notification
 router.post('/test-notification', async (req: Request, res: Response) => {
   try {
-    const { type } = req.body; // 'email' or 'whatsapp'
+    const { type } = req.body; // 'email'
     const settings = await pool.query('SELECT * FROM user_settings LIMIT 1');
     const userSettings = settings.rows[0];
 
@@ -89,19 +84,8 @@ router.post('/test-notification', async (req: Request, res: Response) => {
         `Your ${testData.name} renews on ${testData.next_renewal_date} for ${testData.amount} ${testData.currency}.`
       );
       res.json({ message: 'Test email sent successfully' });
-    } else if (type === 'whatsapp') {
-      if (!userSettings.whatsapp_number) {
-        return res.status(400).json({ error: 'WhatsApp number not configured' });
-      }
-      await sendWhatsApp(
-        userSettings.whatsapp_number,
-        testData.name,
-        testData.next_renewal_date,
-        `${testData.amount} ${testData.currency}`
-      );
-      res.json({ message: 'Test WhatsApp message sent successfully' });
     } else {
-      res.status(400).json({ error: 'Invalid type. Use "email" or "whatsapp"' });
+      res.status(400).json({ error: 'Invalid type. Use "email" ' });
     }
   } catch (error) {
     console.error('Error sending test notification:', error);

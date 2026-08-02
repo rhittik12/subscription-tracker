@@ -1,4 +1,4 @@
-import { relations, sql } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
 import {
   boolean,
   date,
@@ -10,7 +10,6 @@ import {
   serial,
   text,
   timestamp,
-  uniqueIndex,
   varchar,
 } from 'drizzle-orm/pg-core';
 
@@ -29,7 +28,6 @@ export const subscriptionStatusEnum = pgEnum('subscription_status', [
 
 export const notificationTypeEnum = pgEnum('notification_type', [
   'email',
-  'whatsapp',
 ]);
 
 export const notificationStatusEnum = pgEnum('notification_status', [
@@ -101,9 +99,7 @@ export const userSettings = pgTable('user_settings', {
   id: serial('id').primaryKey(),
   preferredCurrency: varchar('preferred_currency', { length: 3 }).notNull().default('INR'),
   email: varchar('email', { length: 255 }),
-  whatsappNumber: varchar('whatsapp_number', { length: 20 }),
   emailNotifications: boolean('email_notifications').notNull().default(true),
-  whatsappNotifications: boolean('whatsapp_notifications').notNull().default(true),
   reminderDaysBefore: integer('reminder_days_before').notNull().default(7),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
     .defaultNow()
