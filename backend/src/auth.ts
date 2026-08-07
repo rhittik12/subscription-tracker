@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import { betterAuth } from 'better-auth';
 import { Pool } from 'pg';
+import { getPostgresSslConfig } from './config/postgresSsl.js';
 
 const databaseUrl = process.env.DATABASE_URL;
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
@@ -21,7 +22,7 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   database: new Pool({
     connectionString: databaseUrl,
-    ssl: { rejectUnauthorized: false },
+    ssl: getPostgresSslConfig(),
   }),
   socialProviders: {
     google: {
