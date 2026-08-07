@@ -1,6 +1,6 @@
 import cron from 'node-cron';
-import pool from '../config/db';
-import { sendEmail } from '../services/emailService';
+import pool from '../config/db.js';
+import { sendEmail } from '../services/emailService.js';
 
 async function advancePastDueRenewals(): Promise<void> {
   try {

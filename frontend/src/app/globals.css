@@ -379,6 +379,8 @@ body {
 .auth-form input:focus { background: #f4ffd0; }
 .auth-form p { font-size: 14px; font-weight: 600; }
 .auth-form p a { text-decoration: underline; }
+.auth-form button:disabled { cursor: wait; opacity: 0.75; }
+.auth-error { color: #b91c1c; }
 
 @media (max-width: 900px) {
   .landing-grid-four { grid-template-columns: repeat(2, 1fr); }

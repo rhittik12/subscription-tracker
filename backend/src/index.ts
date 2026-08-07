@@ -1,20 +1,24 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import subscriptionRoutes from './routes/subscriptions';
-import categoryRoutes from './routes/categories';
-import templateRoutes from './routes/templates';
-import analyticsRoutes from './routes/analytics';
-import settingsRoutes from './routes/settings';
-import currencyRoutes from './routes/currency';
-import { startReminderCron } from './cron/reminderCron';
-
-dotenv.config();
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './auth.js';
+import subscriptionRoutes from './routes/subscriptions.js';
+import categoryRoutes from './routes/categories.js';
+import templateRoutes from './routes/templates.js';
+import analyticsRoutes from './routes/analytics.js';
+import settingsRoutes from './routes/settings.js';
+import currencyRoutes from './routes/currency.js';
+import { startReminderCron } from './cron/reminderCron.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.APP_URL || 'http://localhost:3000',
+  credentials: true,
+}));
+
+app.all('/api/auth/*', toNodeHandler(auth));
 app.use(express.json());
 
 // Routes

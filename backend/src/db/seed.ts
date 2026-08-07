@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 import { inArray } from 'drizzle-orm';
 
-import { db } from './index';
+import { db } from './index.js';
 import {
   categories,
   subscriptionTemplates,
@@ -10,7 +10,7 @@ import {
   type NewCategory,
   type NewSubscriptionTemplate,
   type NewUserSetting,
-} from './schema';
+} from './schema.js';
 
 type TemplateSeed = Omit<NewSubscriptionTemplate, 'categoryId'> & {
   categoryName: string;

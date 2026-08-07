@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import pool from '../config/db';
+import pool from '../config/db.js';
 import { z } from 'zod';
 import { PoolClient } from 'pg';
 
