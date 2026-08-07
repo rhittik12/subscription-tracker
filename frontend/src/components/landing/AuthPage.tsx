@@ -1,8 +1,35 @@
+'use client';
+
 import Link from 'next/link';
+import { useState } from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
 
 export function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   const isSignUp = mode === 'sign-up';
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleGoogleAuth() {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { error: authError } = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: `${window.location.origin}/dashboard`,
+      });
+
+      if (authError) {
+        setError(authError.message || 'Google authentication failed.');
+        setIsLoading(false);
+      }
+    } catch {
+      setError('Google authentication failed. Please try again.');
+      setIsLoading(false);
+    }
+  }
+
   return (
     <main className="auth-page">
       <section className="auth-pitch">
@@ -16,10 +43,16 @@ export function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
         <form className="auth-form">
           <span className="plan-label">{isSignUp ? 'CREATE ACCOUNT' : 'WELCOME BACK'}</span>
           <h2>{isSignUp ? 'Start tracking.' : 'Sign in.'}</h2>
-          {isSignUp && <label>Name<input type="text" placeholder="Your name" /></label>}
-          <label>Email<input type="email" placeholder="you@example.com" /></label>
-          <label>Password<input type="password" placeholder="••••••••" /></label>
-          <Link href="/dashboard" className="landing-button bg-black text-white">{isSignUp ? 'Create account' : 'Sign in'} <ArrowRight size={20} /></Link>
+          <button
+            type="button"
+            className="landing-button bg-black text-white"
+            disabled={isLoading}
+            onClick={handleGoogleAuth}
+          >
+            {isLoading ? 'Opening Google...' : `${isSignUp ? 'Continue' : 'Sign in'} with Google`}
+            <ArrowRight size={20} />
+          </button>
+          {error && <p className="auth-error">{error}</p>}
           <p>{isSignUp ? 'Already have an account?' : 'New to SubTrack?'} <Link href={isSignUp ? '/sign-in' : '/sign-up'}>{isSignUp ? 'Sign in' : 'Create an account'}</Link></p>
         </form>
       </section>

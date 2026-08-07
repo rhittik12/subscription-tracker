@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import pool from '../config/db';
-import { getExchangeRate } from '../services/currencyService';
+import pool from '../config/db.js';
+import { getExchangeRate } from '../services/currencyService.js';
 
 const router = Router();
 

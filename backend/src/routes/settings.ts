@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import pool from '../config/db';
-import { sendEmail } from '../services/emailService';
+import pool from '../config/db.js';
+import { sendEmail } from '../services/emailService.js';
 
 const router = Router();
 
