@@ -13,7 +13,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isPending && !session) {
-      router.push('/sign-in');
+      router.replace('/sign-in');
     }
   }, [session, isPending, router]);
 

@@ -9,6 +9,7 @@ import {
   CircleUserRound,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SignOut } from './SignOut';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -62,9 +63,7 @@ export function Sidebar() {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-white/30 to-white/10 text-black ring-1 ring-white/10">
             <CircleUserRound size={20} />
           </div>
-          <div>
-            <p className="text-sm font-bold text-black">Workspace User</p>
-          </div>
+          <SignOut />
         </div>
       </div>
     </aside>
