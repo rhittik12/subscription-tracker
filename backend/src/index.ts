@@ -24,11 +24,11 @@ app.use(express.json());
 
 // Routes
 app.use('/api/subscriptions', requireAuth, subscriptionRoutes);
-app.use('/api/categories', requireAuth, categoryRoutes);
-app.use('/api/templates', requireAuth, templateRoutes);
-app.use('/api/analytics', requireAuth, analyticsRoutes);
+app.use('/api/categories',requireAuth, categoryRoutes);
+app.use('/api/templates',requireAuth, templateRoutes);
+app.use('/api/analytics',requireAuth, analyticsRoutes);
 app.use('/api/settings', requireAuth, settingsRoutes);
-app.use('/api/currency', requireAuth, currencyRoutes);
+app.use('/api/currency',requireAuth, currencyRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
