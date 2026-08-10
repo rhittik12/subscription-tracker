@@ -9,6 +9,7 @@ import analyticsRoutes from './routes/analytics.js';
 import settingsRoutes from './routes/settings.js';
 import currencyRoutes from './routes/currency.js';
 import { startReminderCron } from './cron/reminderCron.js';
+import { requireAuth } from './middleware/requireAuth.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -22,11 +23,11 @@ app.all('/api/auth/*', toNodeHandler(auth));
 app.use(express.json());
 
 // Routes
-app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/subscriptions', requireAuth, subscriptionRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/templates', templateRoutes);
 app.use('/api/analytics', analyticsRoutes);
-app.use('/api/settings', settingsRoutes);
+app.use('/api/settings', requireAuth, settingsRoutes);
 app.use('/api/currency', currencyRoutes);
 
 // Health check
