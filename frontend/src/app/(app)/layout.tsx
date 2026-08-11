@@ -30,10 +30,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <main className="min-h-screen lg:ml-[280px]">
         <BrutalistClientWrapper>
-          <Suspense fallback={<div className="h-[77px] border-b-2 border-black bg-white" />}>
+          <Suspense fallback={<div className="h-[77px] border-b-2 border-black bg-[#fcfaf7]" />}>
             <Navbar />
           </Suspense>
-          <div className="px-gutter pb-10 pt-6 lg:pt-8">{children}</div>
+          <div className="px-[clamp(20px,4vw,48px)] pb-12 pt-8 lg:pt-10">{children}</div>
         </BrutalistClientWrapper>
       </main>
     </div>

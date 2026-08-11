@@ -21,20 +21,17 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside data-sidebar className="hidden lg:flex fixed left-0 top-0 h-screen w-[280px] flex-col px-4 py-8 z-50">
-      {/* Inner light reflection */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none rounded-none" />
-
-      <div className="relative z-10 px-4 pb-8">
+    <aside data-sidebar className="hidden lg:flex fixed left-0 top-0 h-screen w-[280px] flex-col px-5 py-8 z-50">
+      <div className="relative z-10 px-2 pb-9">
         <h1 className="font-headline text-4xl font-extrabold tracking-tight text-black">
           SubTrack
         </h1>
-        <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-black">
-          Wealth Management
+        <p className="mt-2 inline-flex border-2 border-black bg-white px-2 py-1 text-[10px] font-black uppercase text-black shadow-[3px_3px_0_#111]">
+          Money Control
         </p>
       </div>
 
-      <nav className="relative z-10 space-y-1">
+      <nav className="relative z-10 space-y-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -42,15 +39,12 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'group relative flex items-center gap-3 px-4 py-3 text-sm font-semibold tracking-tight transition-all duration-300',
+                'group relative flex items-center gap-3 border-2 border-transparent px-4 py-3 text-sm font-extrabold uppercase transition-all duration-150',
                 isActive
-                  ? 'text-black bg-[#89ACE7] border-r-[6px] border-black translate-x-1 brutalist-shadow-sm'
-                  : 'text-black/80 hover:text-black hover:bg-white/30'
+                  ? 'border-black bg-white text-black shadow-[4px_4px_0_#111]'
+                  : 'text-black/80 hover:border-black hover:bg-white/50 hover:text-black'
               )}
             >
-              {isActive && (
-                <div className="absolute left-0 top-2 h-8 w-1 bg-black" />
-              )}
               <item.icon size={18} />
               {item.label}
             </Link>
@@ -58,9 +52,9 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="relative z-10 mt-auto p-4">
+      <div className="relative z-10 mt-auto border-t-2 border-black px-1 pt-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-white/30 to-white/10 text-black ring-1 ring-white/10">
+          <div className="flex h-10 w-10 items-center justify-center border-2 border-black bg-white text-black shadow-[3px_3px_0_#111]">
             <CircleUserRound size={20} />
           </div>
           <SignOut />

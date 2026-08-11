@@ -70,11 +70,11 @@ export function SubscriptionTable({
   return (
     <div className="space-y-6">
       {loading ? (
-        <div className="glass-card rounded-2xl px-6 py-10 text-center" role="status" aria-live="polite">
-          <p className="text-sm font-medium text-black">Loading subscriptions...</p>
+        <div className="app-panel px-6 py-10 text-center" role="status" aria-live="polite">
+          <p className="text-sm font-extrabold text-black">Loading subscriptions...</p>
         </div>
       ) : subscriptions.length > 0 ? (
-        <div className="border-[3px] border-black bg-white brutalist-shadow overflow-hidden">
+        <div className="app-table-wrap">
           <div className="overflow-x-auto relative z-10">
             <table className="w-full min-w-[900px] border-collapse lg:min-w-0" aria-label="Subscriptions table">
               <thead className="bg-[#89ACE7]">
@@ -95,20 +95,20 @@ export function SubscriptionTable({
                   const amount = Number(sub.amount);
 
                   return (
-                    <tr key={sub.id} className="bg-white transition-colors duration-200 hover:bg-[#d9f0c6]">
+                    <tr key={sub.id} className="bg-white transition-colors duration-150 hover:bg-[#eae7e2]">
                       <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
                         <div className="flex items-center gap-3">
                           {resolveLogoUrl(sub.logo_url) ? (
                             <img
                               src={resolveLogoUrl(sub.logo_url) || undefined}
                               alt={sub.name}
-                              className="h-8 w-8 rounded-xl object-contain bg-white/10 p-1"
+                              className="h-8 w-8 border-2 border-black bg-white p-1 object-contain"
                               loading="lazy"
                               decoding="async"
                             />
                           ) : (
                             <div
-                              className="flex h-8 w-8 items-center justify-center rounded-xl text-xs font-bold text-black ring-1 ring-black/10"
+                              className="flex h-8 w-8 items-center justify-center border-2 border-black text-xs font-bold text-black"
                               style={{ backgroundColor: `${sub.category_color}30` }}
                             >
                               {getInitial(sub.name)}
@@ -119,10 +119,9 @@ export function SubscriptionTable({
                       </td>
                       <td className="border-r-[3px] border-black px-4 py-3 last:border-r-0">
                         <span
-                          className="rounded-full px-2.5 py-1 text-xs font-medium"
+                          className="inline-flex border-2 border-black bg-white px-2.5 py-1 text-xs font-extrabold uppercase text-black"
                           style={{
-                            backgroundColor: `${sub.category_color}18`,
-                            color: sub.category_color,
+                            backgroundColor: `${sub.category_color}22`,
                           }}
                         >
                           {sub.category_name}
@@ -152,7 +151,7 @@ export function SubscriptionTable({
                           <button
                             type="button"
                             onClick={() => onEdit(sub)}
-                            className="border-[2px] border-black p-2 hover:bg-[#89ACE7]"
+                            className="border-2 border-black bg-white p-2 transition-colors hover:bg-[#89ACE7]"
                           >
                             <Edit size={16} />
                           </button>
@@ -165,7 +164,7 @@ export function SubscriptionTable({
                                 sub.status === 'active' ? 'paused' : 'active'
                               )
                             }
-                            className="border-[2px] border-black p-2 hover:bg-[#89ACE7]"
+                            className="border-2 border-black bg-white p-2 transition-colors hover:bg-[#89ACE7]"
                           >
                             {sub.status === 'active' ? (
                               <Pause size={16} />
@@ -177,7 +176,7 @@ export function SubscriptionTable({
                           <button
                             type="button"
                             onClick={() => onDelete(sub.id)}
-                            className="border-[2px] border-black p-2 hover:bg-red-200"
+                            className="border-2 border-black bg-white p-2 transition-colors hover:bg-[#FCA5A5]"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -191,9 +190,9 @@ export function SubscriptionTable({
           </div>
         </div>
       ) : (
-        <div className="glass-card rounded-2xl px-6 py-10 text-center">
-          <p className="text-sm font-semibold text-black">No subscriptions found.</p>
-          <p className="mt-2 text-sm text-black">Add a subscription to get started.</p>
+        <div className="app-panel px-6 py-10 text-center">
+          <p className="text-sm font-extrabold text-black">No subscriptions found.</p>
+          <p className="mt-2 text-sm font-semibold text-black/60">Add a subscription to get started.</p>
         </div>
       )}
     </div>

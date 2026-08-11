@@ -56,11 +56,11 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-40 glass-panel rounded-2xl px-4 py-4 lg:px-6">
+    <nav className="sticky top-0 z-40 border-b-2 border-black bg-[#fcfaf7] px-[clamp(20px,4vw,48px)] py-4">
       <div className="flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap sm:gap-4">
         <div className="order-1 flex min-w-0 flex-1 items-center gap-3">
           <button
-            className="mobile-nav-button shrink-0 lg:hidden rounded-xl p-2 text-black transition-colors hover:bg-white/10 hover:text-white/80"
+            className="app-icon-button mobile-nav-button shrink-0 lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
           >
@@ -78,7 +78,7 @@ export function Navbar() {
                 value={searchValue}
                 onChange={(event) => setSearchValue(event.target.value)}
                 placeholder={searchPlaceholder}
-                className="w-full border-[3px] border-black bg-white px-4 py-3 pl-11 text-sm font-bold text-black placeholder:text-black/60 outline-none brutalist-shadow focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
+                className="app-field pl-11"
                 aria-label="Search"
               />
             </div>
@@ -88,27 +88,27 @@ export function Navbar() {
         </div>
 
         <div className="order-2 flex shrink-0 items-center gap-2">
-          <button className="mobile-nav-button glass-chip rounded-xl p-2.5 text-black transition-all duration-300 hover:text-black" aria-label="Notifications">
+          <button className="app-icon-button mobile-nav-button" aria-label="Notifications">
             <Bell size={18} />
           </button>
-          <button className="mobile-hide glass-chip hidden rounded-xl p-2.5 text-black transition-all duration-300 hover:text-black sm:inline-flex" aria-label="Help">
+          <button className="app-icon-button mobile-hide hidden sm:inline-flex" aria-label="Help">
             <CircleHelp size={18} />
           </button>
-          <div className="hidden h-9 w-9 rounded-full bg-gradient-to-br from-white/80 to-white/40 shadow-[0_0_20px_rgba(255,255,255,0.2)] sm:block" />
+          <div className="hidden h-[42px] w-[42px] border-2 border-black bg-[#d9ff63] shadow-[4px_4px_0_#111] sm:block" />
         </div>
       </div>
 
       {mobileMenuOpen && (
-        <div className="glass-panel mt-4 space-y-1 rounded-xl p-2 lg:hidden">
+        <div className="app-panel app-panel-lime mt-4 space-y-2 p-3 lg:hidden">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                'block rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-300',
+                'block border-2 px-3 py-2.5 text-sm font-extrabold uppercase transition-all duration-150',
                 pathname === link.href
-                  ? 'glass-chip text-white/85'
-                  : 'text-black/70 hover:bg-white/30 hover:text-black'
+                  ? 'border-black bg-white text-black shadow-[3px_3px_0_#111]'
+                  : 'border-transparent text-black/75 hover:border-black hover:bg-white/50 hover:text-black'
               )}
               onClick={() => setMobileMenuOpen(false)}
             >

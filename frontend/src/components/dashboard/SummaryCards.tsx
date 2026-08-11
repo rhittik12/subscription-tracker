@@ -21,28 +21,28 @@ export function SummaryCards({ summary, loading }: SummaryCardsProps) {
       value: summary ? formatCurrency(summary.total_monthly, summary.currency) : '--',
       icon: IndianRupee,
       color: 'text-black',
-      bg: 'bg-white/10',
+      bg: 'bg-[#d9ff63]',
     },
     {
       title: 'Yearly Spend',
       value: summary ? formatCurrency(summary.total_yearly, summary.currency) : '--',
       icon: Calendar,
       color: 'text-black',
-      bg: 'bg-emerald-500/10',
+      bg: 'bg-[#89ace7]',
     },
     {
       title: 'Active Subscriptions',
       value: summary ? summary.active_count.toString() : '--',
       icon: CreditCard,
       color: 'text-black',
-      bg: 'bg-purple-500/10',
+      bg: 'bg-[#fde68a]',
     },
     {
       title: 'Renewing This Week',
       value: summary ? summary.renewing_this_week.toString() : '--',
       icon: AlertTriangle,
       color: 'text-black',
-      bg: 'bg-amber-500/10',
+      bg: 'bg-[#fca5a5]',
     },
   ];
 
@@ -51,11 +51,11 @@ export function SummaryCards({ summary, loading }: SummaryCardsProps) {
       {cards.map((card) => (
         <div
           key={card.title}
-          className="rounded-xl border border-border bg-card p-5 transition-shadow hover:shadow-md"
+          className="app-panel p-5 transition-colors hover:bg-[#eae7e2]"
         >
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-muted-foreground">{card.title}</p>
-            <div className={`rounded-lg p-2 ${card.bg}`}>
+            <p className="text-sm font-extrabold uppercase text-black">{card.title}</p>
+            <div className={`border-2 border-black p-2 ${card.bg}`}>
               <card.icon size={18} className={card.color} />
             </div>
           </div>
