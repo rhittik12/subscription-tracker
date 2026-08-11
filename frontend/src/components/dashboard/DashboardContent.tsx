@@ -122,13 +122,21 @@ export function DashboardContent() {
   );
 
   return (
-    <div className="space-y-10">
-      {/* Summary cards with glow effects */}
-      <div className="grid grid-cols-12 gap-6 lg:gap-8">
-        {/* Monthly Spend — hero card with glow */}
-        <div className="col-span-12 lg:col-span-5 relative">
-          <div className="glow -inset-6 bg-white/15" />
-          <div className="glass-card glass-reflection brutalist-shadow p-7 lg:p-8 relative z-10">
+    <div className="app-page">
+      <div className="app-page-header">
+        <div>
+          <span className="app-kicker">Monthly Overview</span>
+          <h1 className="app-page-title mt-4">Dashboard</h1>
+          <p className="app-page-copy">
+            Review recurring spend, upcoming charges, and active services in one clear view.
+          </p>
+        </div>
+      </div>
+      {/* Summary cards with landing-derived hard surfaces */}
+      <div className="grid grid-cols-12 gap-5 lg:gap-7">
+        {/* Monthly Spend hero card */}
+        <div className="col-span-12 lg:col-span-5">
+          <div className="app-panel app-panel-blue p-7 lg:p-8">
             <span className="block text-xs font-bold uppercase tracking-[0.2em] text-black">
               Total Monthly Spend
             </span>
@@ -143,9 +151,8 @@ export function DashboardContent() {
         </div>
 
         {/* Upcoming Payments */}
-        <div className="col-span-12 lg:col-span-3 relative">
-          <div className="glow -inset-4 bg-violet-500/10" />
-          <div className="glass-card glass-reflection brutalist-shadow p-6 lg:p-8 relative z-10">
+        <div className="col-span-12 lg:col-span-3">
+          <div className="app-panel p-6 lg:p-8">
             <span className="block text-xs font-bold uppercase tracking-[0.2em] text-black">
               Upcoming Payments
             </span>
@@ -155,18 +162,17 @@ export function DashboardContent() {
             <p className="mt-2 text-sm text-black">
               Due in next {summary?.upcoming_window_days ?? 7} days
             </p>
-            <div className="mt-6 flex gap-1">
-              <div className="h-1 flex-1 rounded-full bg-white/80" />
-              <div className="h-1 flex-1 rounded-full bg-white/40" />
-              <div className="h-1 flex-1 rounded-full bg-white/[0.06]" />
+            <div className="mt-6 grid grid-cols-3 gap-2">
+              <div className="h-2 border-2 border-black bg-[#d9ff63]" />
+              <div className="h-2 border-2 border-black bg-[#89ace7]" />
+              <div className="h-2 border-2 border-black bg-white" />
             </div>
           </div>
         </div>
 
         {/* Active Assets */}
-        <div className="col-span-12 lg:col-span-4 relative">
-          <div className="glow -inset-4 bg-white/10" />
-          <div className="glass-card glass-reflection brutalist-shadow p-6 lg:p-8 relative z-10">
+        <div className="col-span-12 lg:col-span-4">
+          <div className="app-panel app-panel-lime p-6 lg:p-8">
             <span className="block text-xs font-bold uppercase tracking-[0.2em] text-black">
               Active Assets
             </span>
@@ -174,11 +180,11 @@ export function DashboardContent() {
               {summary?.active_count ?? '--'}
             </p>
             <p className="mt-2 text-sm text-black">Subscription protocols active</p>
-            <div className="mt-6 flex -space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-[10px] font-bold text-black ring-2 ring-[#050816]">N</div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/20 text-[10px] font-bold text-black ring-2 ring-[#050816]">S</div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-bold text-black ring-2 ring-[#050816]">A</div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.06] text-[10px] font-bold text-black ring-2 ring-[#050816]">
+            <div className="mt-6 flex gap-2">
+              <div className="flex h-8 w-8 items-center justify-center border-2 border-black bg-white text-[10px] font-bold text-black">N</div>
+              <div className="flex h-8 w-8 items-center justify-center border-2 border-black bg-[#89ace7] text-[10px] font-bold text-black">S</div>
+              <div className="flex h-8 w-8 items-center justify-center border-2 border-black bg-[#fde68a] text-[10px] font-bold text-black">A</div>
+              <div className="flex h-8 w-8 items-center justify-center border-2 border-black bg-white text-[10px] font-bold text-black">
                 +{Math.max((summary?.active_count ?? 0) - 3, 0)}
               </div>
             </div>
@@ -190,7 +196,7 @@ export function DashboardContent() {
       <div className="flex items-center justify-end">
         <Link
           href="/subscriptions"
-          className="glass-btn brutalist-shadow inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold"
+          className="app-button app-button-primary"
         >
           <Plus size={18} />
           Add Subscription
@@ -200,11 +206,11 @@ export function DashboardContent() {
       {/* Service cards by category */}
       <section className="space-y-8">
         {filteredSubscriptions.length === 0 ? (
-          <div className="glass-card glass-reflection brutalist-shadow p-8 text-center">
-            <p className="text-sm font-semibold text-white/80">
+          <div className="app-panel p-8 text-center">
+            <p className="text-sm font-extrabold text-black">
               {searchQuery ? 'No services match your search.' : 'No services available.'}
             </p>
-            <p className="mt-2 text-sm text-white/35">
+            <p className="mt-2 text-sm font-semibold text-black/60">
               {searchQuery ? 'Try another service, category, or domain.' : 'Add a subscription template to get started.'}
             </p>
           </div>
@@ -212,8 +218,8 @@ export function DashboardContent() {
           groupedVisibleSubscriptions.map((group) => (
             <div key={group.category}>
               <div className="mb-4 flex items-center gap-3">
-                <h2 className="font-headline text-lg font-extrabold text-black">{group.category}</h2>
-                <span className="text-xs font-semibold text-black">{group.services.length} Services</span>
+                <h2 className="font-headline text-2xl font-extrabold text-black">{group.category}</h2>
+                <span className="glass-chip glass-chip-lime">{group.services.length} Services</span>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 {group.services.map((service) => {
@@ -225,7 +231,7 @@ export function DashboardContent() {
                   return (
                     <div
                       key={service.id}
-                      className="glass-card glass-reflection brutalist-shadow p-4"
+                      className="app-panel p-4 transition-colors duration-150 hover:bg-[#eae7e2]"
                     >
                       <div className="relative z-10">
                         <div className="mb-4 flex items-start justify-between">
@@ -233,12 +239,12 @@ export function DashboardContent() {
                             <img
                               src={resolveLogoUrl(service.logo_url) || undefined}
                               alt={`${service.name} logo`}
-                              className="h-9 w-9 bg-white/10 object-contain p-1.5"
+                              className="h-9 w-9 border-2 border-black bg-white object-contain p-1.5"
                               loading="lazy"
                               decoding="async"
                             />
                           ) : (
-                            <div className="flex h-9 w-9 items-center justify-center bg-white/10 text-xs font-bold text-black">
+                            <div className="flex h-9 w-9 items-center justify-center border-2 border-black bg-[#d9ff63] text-xs font-bold text-black">
                               {getInitial(service.name)}
                             </div>
                           )}
@@ -257,7 +263,7 @@ export function DashboardContent() {
                           </div>
                           <div className="text-right">
                             <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-black">Next Due</p>
-                            <p className={`text-sm font-bold ${isExpiring ? 'text-rose-400' : 'text-black'}`}>
+                            <p className={`text-sm font-bold ${isExpiring ? 'text-red-700' : 'text-black'}`}>
                               {formatCardDueDate(dueDate)}
                             </p>
                           </div>
@@ -276,7 +282,7 @@ export function DashboardContent() {
             <button
               type="button"
               onClick={() => setVisibleCount((prev) => Math.min(prev + 5, filteredSubscriptions.length))}
-              className="glass-btn rounded-2xl px-6 py-2.5 text-sm font-semibold"
+              className="app-button"
             >
               View More
             </button>

@@ -82,13 +82,14 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <div className="space-y-10">
-      <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="app-page">
+      <div className="app-page-header">
         <div>
-          <h1 className="font-headline text-3xl font-extrabold tracking-tight text-black lg:text-4xl">Subscriptions</h1>
-          <p className="mt-2 text-sm font-medium text-black">Manage all your subscriptions ({subscriptions.length} total)</p>
+          <span className="app-kicker">{subscriptions.length} Total</span>
+          <h1 className="app-page-title mt-4">Subscriptions</h1>
+          <p className="app-page-copy">Manage services, renewal dates, costs, and saved templates.</p>
         </div>
-        <button onClick={() => { setEditingSub(null); setSelectedTemplate(null); setModalOpen(true); }} className="mobile-full-button glass-btn inline-flex w-full items-center justify-center gap-2 px-5 py-3 text-sm font-semibold sm:w-auto">
+        <button onClick={() => { setEditingSub(null); setSelectedTemplate(null); setModalOpen(true); }} className="app-button app-button-primary mobile-full-button w-full sm:w-auto">
           <Plus size={18} /> Add New
         </button>
       </div>
@@ -105,13 +106,13 @@ export default function SubscriptionsPage() {
       {pendingDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <button className="fixed inset-0 bg-black/60" aria-label="Close" onClick={() => setPendingDelete(null)} />
-          <div className="glass-card relative w-full max-w-sm p-5">
+          <div className="app-panel relative w-full max-w-sm bg-[#fcfaf7] p-5">
             <div className="mb-4 flex items-center gap-3"><Trash2 size={18} /><h2 className="font-headline text-lg font-bold">Delete {pendingDelete.name}?</h2></div>
             <p>This will remove the subscription from your tracker.</p>
             {deleteError && <p className="mt-3 text-red-700">{deleteError}</p>}
             <div className="mt-6 flex justify-end gap-3">
-              <button className="glass-chip px-4 py-2.5" onClick={() => setPendingDelete(null)}>Cancel</button>
-              <button className="border-2 border-black bg-red-500 px-4 py-2.5 font-bold" onClick={confirmDelete} disabled={deletingId === pendingDelete.id}>
+              <button className="app-button px-4 py-2.5" onClick={() => setPendingDelete(null)}>Cancel</button>
+              <button className="app-button app-button-danger px-4 py-2.5" onClick={confirmDelete} disabled={deletingId === pendingDelete.id}>
                 {deletingId === pendingDelete.id ? 'Deleting...' : 'Delete'}
               </button>
             </div>

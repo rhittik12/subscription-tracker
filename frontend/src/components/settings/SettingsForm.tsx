@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { UserSettings, CURRENCIES } from '@/types';
 import { getSettings, updateSettings, sendTestNotification } from '@/lib/api';
-import { Save, Send, Mail, MessageSquare } from 'lucide-react';
+import { Save, Send, Mail } from 'lucide-react';
 
 export function SettingsForm() {
-  const [settings, setSettings] = useState<UserSettings | null>(null);
+  const [, setSettings] = useState<UserSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testingEmail, setTestingEmail] = useState(false);
@@ -71,34 +71,34 @@ export function SettingsForm() {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-20 rounded-2xl glass-chip animate-pulse" />
+          <div key={i} className="h-20 animate-pulse border-[3px] border-black bg-[#eae7e2] shadow-[4px_4px_0_#111]" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="max-w-3xl space-y-6">
       {message && (
-        <div className={`p-4 rounded-2xl text-sm font-medium ${message.type === 'success'
-          ? 'bg-emerald-100 text-emerald-900 border border-emerald-400'
-          : 'bg-rose-100 text-rose-900 border border-rose-400'
+        <div className={`border-[3px] border-black p-4 text-sm font-extrabold ${message.type === 'success'
+          ? 'bg-[#d9f0c6] text-black'
+          : 'bg-[#fca5a5] text-black'
           }`}>
           {message.text}
         </div>
       )}
 
       {/* Currency */}
-      <div className="border-[3px] border-black bg-[#ffec70] p-4 brutalist-shadow sm:p-6">
+      <div className="app-panel app-panel-amber p-4 sm:p-6">
         <div className="relative z-10">
-          <h3 className="font-semibold text-black mb-4">Display Currency</h3>
-          <p className="text-sm text-black mb-3">
+          <h3 className="font-headline mb-3 text-2xl font-extrabold text-black">Display Currency</h3>
+          <p className="mb-4 text-sm font-semibold leading-6 text-black/70">
             All spending totals will be converted to this currency
           </p>
           <select
             value={preferredCurrency}
             onChange={(e) => setPreferredCurrency(e.target.value)}
-            className="w-full sm:w-auto border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
+            className="app-field sm:w-auto"
           >
             {CURRENCIES.map((c) => (
               <option key={c.code} value={c.code} className="bg-white text-black">
@@ -110,23 +110,24 @@ export function SettingsForm() {
       </div>
 
       {/* Email Notifications */}
-      <div className="border-[3px] border-black bg-[#ffec70] p-4 brutalist-shadow sm:p-6">
+      <div className="app-panel app-panel-blue p-4 sm:p-6">
         <div className="relative z-10">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <div className="border-[3px] border-black bg-white p-2.5">
                 <Mail size={18} className="text-black" />
               </div>
-              <h3 className="text-sm font-semibold text-black sm:text-base">Email Notifications</h3>
+              <h3 className="font-headline text-xl font-extrabold text-black sm:text-2xl">Email Notifications</h3>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex h-8 w-14 cursor-pointer items-center">
               <input
                 type="checkbox"
                 checked={emailNotifications}
                 onChange={(e) => setEmailNotifications(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-full sm:w-auto border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"></div>
+              <span className="absolute inset-0 border-[3px] border-black bg-white shadow-[4px_4px_0_#111] transition-colors peer-checked:bg-[#d9ff63]" />
+              <span className="absolute left-[3px] top-[3px] h-[calc(100%-6px)] w-[calc(50%-3px)] border-r-[3px] border-black bg-white transition-transform peer-checked:translate-x-full" />
             </label>
           </div>
           <input
@@ -134,12 +135,12 @@ export function SettingsForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
-            className="w-full border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black placeholder:text-black/60 brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
+            className="app-field"
           />
           <button
             onClick={() => handleTestNotification('email')}
             disabled={testingEmail || !email}
-            className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-black hover:text-black transition-colors disabled:opacity-30 disabled:hover:text-black"
+            className="mt-4 inline-flex items-center gap-2 border-b-2 border-black text-sm font-extrabold uppercase text-black transition-colors hover:bg-white disabled:opacity-40"
           >
             <Send size={14} />
             {testingEmail ? 'Sending...' : 'Send Test Email'}
@@ -148,16 +149,16 @@ export function SettingsForm() {
       </div>
 
       {/* Reminder Days */}
-      <div className="border-[3px] border-black bg-[#ffec70] p-4 brutalist-shadow sm:p-6">
+      <div className="app-panel p-4 sm:p-6">
         <div className="relative z-10">
-          <h3 className="font-semibold text-black mb-4">Reminder Timing</h3>
-          <p className="text-sm text-black mb-3">
+          <h3 className="font-headline mb-3 text-2xl font-extrabold text-black">Reminder Timing</h3>
+          <p className="mb-4 text-sm font-semibold leading-6 text-black/70">
             How many days before renewal should you be notified?
           </p>
           <select
             value={reminderDays}
             onChange={(e) => setReminderDays(Number(e.target.value))}
-            className="w-full sm:w-auto border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black brutalist-shadow outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-[4px_4px_0_0_#000000]"
+            className="app-field sm:w-auto"
           >
             <option value={1} className="bg-white text-black">1 day before</option>
             <option value={3} className="bg-white text-black">3 days before</option>
@@ -174,7 +175,7 @@ export function SettingsForm() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="mobile-full-button inline-flex w-full items-center justify-center gap-2 border-[3px] border-black bg-white px-6 py-3 text-sm font-black uppercase text-black brutalist-shadow transition-all disabled:opacity-50 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0_0_#000000] disabled:hover:translate-x-0 disabled:hover:translate-y-0 sm:w-auto"
+          className="app-button mobile-full-button w-full bg-black text-white disabled:opacity-50 sm:w-auto"
         >
           <Save size={18} />
           {saving ? 'Saving...' : 'Save Settings'}
